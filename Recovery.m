@@ -4,6 +4,7 @@
 % Usage:
 %         - Recovery(filePath):                 Constructor which (optionally) imports the image. 
 %         - setCorner( cornerNr, coordinate ):  Sets the specified points of a rectangle (pre projection) as [u,v].
+%         - getCorners():                       Returns all the setcorners.
 %         - recover():                          Initiate recovery.
 %         - getRecoveredImage():                Returns a copy of the recovered image if neccessary points are specified.
 %         - getImage():                         Returns a copy of the original image.
@@ -16,13 +17,15 @@
 classdef (Abstract) Recovery < handle
     
     %% properties
-    properties (SetAccess = private)
+    properties (Access = ?AffineRecovery)
         image%          The original image
         corners%        4 corners of a rectangle to be set
         nCorners%       Keeps track of number of corners set
         recovered%      Bool of recovery status
         imageOpened%    Bool of image status
+        recoveredImage% The recovered image
     end% properties
+    
     
     %% events
     events
@@ -38,7 +41,6 @@ classdef (Abstract) Recovery < handle
             obj.recovered = false;
             obj.corners = zeros(4,3);
             obj.corners(:,3) = 1;
-            obj.nCorners = 0;
             obj.imageOpened = false;
             
             if nargin > 0
@@ -50,10 +52,23 @@ classdef (Abstract) Recovery < handle
         function setCorner( obj, cornerNr, coordinate )
             if cornerNr>0 && cornerNr<=4
                 obj.corners( cornerNr, 1:2 ) = coordinate;
-                obj.nCorners = obj.nCorners + 1;
             end
         end% setPoint
         
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function pts = getCorners(obj)
+            pts = obj.corners;
+        end% getCorners
+               
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function im = getRecoveredImage(obj)
+            if obj.recovered
+                im = obj.recoveredImage;
+            else
+                notify(obj,'notRecovered');
+            end
+        end% getRecoveredImage
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function im = getImage( obj )
             if obj.imageOpened
@@ -80,7 +95,6 @@ classdef (Abstract) Recovery < handle
     %% abstract methods
     methods (Abstract)
         recover(obj)
-        getRecoveredImage(obj)
     end% abstract methods
     
   
