@@ -17,7 +17,7 @@
 classdef (Abstract) Recovery < handle
     
     %% properties
-    properties (Access = ?AffineRecovery)
+    properties (Access = {?AffineRecovery,?MetricRecovery})
         image%          The original image
         corners%        4 corners of a rectangle to be set
         nCorners%       Keeps track of number of corners set
@@ -39,7 +39,7 @@ classdef (Abstract) Recovery < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function obj = Recovery( filePath )% Constructor
             obj.recovered = false;
-            obj.corners = zeros(4,3);
+            obj.corners = zeros(7,3);
             obj.corners(:,3) = 1;
             obj.imageOpened = false;
             
@@ -50,7 +50,7 @@ classdef (Abstract) Recovery < handle
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setCorner( obj, cornerNr, coordinate )
-            if cornerNr>0 && cornerNr<=4
+            if cornerNr>0 && cornerNr<=7
                 obj.corners( cornerNr, 1:2 ) = coordinate;
             end
         end% setPoint

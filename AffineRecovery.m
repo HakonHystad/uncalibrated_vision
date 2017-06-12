@@ -1,5 +1,5 @@
 %% affine recovery class
-% A child of the recovery class, uses a line at infinity to recover affine properties.
+% A child of the recovery class, uses a line at infinity (from 2 and 2 pre-projected, parallel lines) to recover affine properties.
 % Usage:
 %         - getPointsAtInfinity()
 %         - getTransformation()
