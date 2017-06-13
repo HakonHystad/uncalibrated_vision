@@ -39,7 +39,7 @@ classdef (Abstract) Recovery < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function obj = Recovery( filePath )% Constructor
             obj.recovered = false;
-            obj.corners = zeros(7,3);
+            obj.corners = zeros(16,3);
             obj.corners(:,3) = 1;
             obj.imageOpened = false;
             
@@ -50,7 +50,7 @@ classdef (Abstract) Recovery < handle
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setCorner( obj, cornerNr, coordinate )
-            if cornerNr>0 && cornerNr<=7
+            if cornerNr>0 && cornerNr<=16
                 obj.corners( cornerNr, 1:2 ) = coordinate;
             end
         end% setPoint
@@ -66,6 +66,7 @@ classdef (Abstract) Recovery < handle
                 im = obj.recoveredImage;
             else
                 notify(obj,'notRecovered');
+                im = 0;
             end
         end% getRecoveredImage
 
