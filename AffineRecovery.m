@@ -51,11 +51,6 @@ classdef AffineRecovery < Recovery
                         0   1   0;...
                         Li'];
             
-            [ulim,vlim] = size(obj.image);
-            limTest = obj.Ha*[ulim;vlim;1];limTest = limTest/limTest(3);
-            if max(limTest)>2000
-                return;
-            end
             tform = projective2d( obj.Ha' );
            
             

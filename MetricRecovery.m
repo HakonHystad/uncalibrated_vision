@@ -54,13 +54,7 @@ classdef MetricRecovery < Recovery
             try
                 obj.HpInv = inv(Hp);
             catch
-                return;
-            end
-            
-            [ulim,vlim] = size(obj.image);
-            limTest = obj.HpInv*[ulim;vlim;1];limTest = limTest/limTest(3);
-           
-            if max(limTest)>2000
+                disp('Singularity');
                 return;
             end
             
@@ -86,6 +80,7 @@ classdef MetricRecovery < Recovery
         function corners = getRecoveredCorners(obj)
             corners = zeros(4,3);
             p = obj.getCorners();
+       
             for i = 1:4
                 corners(i,:) = ( obj.HpInv*p(i,:)' )';
                 corners(i,:) = corners(i,:)/corners(i,3);

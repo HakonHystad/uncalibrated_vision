@@ -115,7 +115,7 @@ close all;
 
 % --- executes everytime a corner moves
 function newCornerPos(hObject, handles, pos, corner)
-    fprintf('Corner %.f moved to [ %.2f, %.2f ]\n',corner,pos(1),pos(2));
+    %fprintf('Corner %.f moved to [ %.2f, %.2f ]\n',corner,pos(1),pos(2));
     
     handles.affine.setCorner( corner, pos );
     handles.metric.setCorner( corner, pos );
@@ -203,7 +203,7 @@ function recoverbutton_Callback(hObject, eventdata, handles)
     
     
     % plot transformed points and following rectangle
-    plotCorners( handles.metric.getRecoveredCorners() );
+    %plotCorners( handles.metric.getRecoveredCorners() );
     
     
     
