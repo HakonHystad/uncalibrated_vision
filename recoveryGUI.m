@@ -23,7 +23,7 @@ function varargout = recoveryGUI(varargin)
 
 % Edit the above text to modify the response to help recoveryGUI
 
-% Last Modified by GUIDE v2.5 13-Jun-2017 13:58:26
+% Last Modified by GUIDE v2.5 13-Jun-2017 15:30:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,6 +69,7 @@ handles.affine = AffineRecovery();
 handles.metric = MetricRecovery();
 handles.affine.setImage('building.jpg');
 handles.metric.setImage('building.jpg');
+
 
 init(hObject, handles);
 
@@ -122,13 +123,14 @@ function newCornerPos(hObject, handles, pos, corner)
     
     % Update handles structure
     guidata(hObject, handles);
-
     
-    %plotLines( hObject, handles ); % TODO: fix updating lines
+    plotLines( hObject, handles ); % TODO: fix updating lines
     
 % --- helper to plot lines between corners
 function plotLines( hObject, handles )
     axes(handles.axesOriginal);
+    cla% rm to work
+    %imshow( handles.affine.getImage() );
 
     p = handles.affine.getCorners();
     
@@ -138,6 +140,9 @@ function plotLines( hObject, handles )
     end
     hold on
     plot( [p(4,1),p(1,1)],[p(4,2),p(1,2)], 'r' );
+
+    % Update handles structure
+    guidata(hObject, handles);
    
 
     
@@ -169,12 +174,17 @@ function init( hObject, handles )
     fcn = makeConstrainToRectFcn('impoint',xlim,ylim);
     % Enforce boundary constraint function
     setPositionConstraintFcn(cornerHandle,fcn);
-    
+    set(cornerHandle,'handlevisibility','off');
 
     end% for
+   
     
     % Update handles structure
     guidata(hObject, handles);
+    
+    plotLines( hObject, handles );
+    
+ 
     
   
 
@@ -224,6 +234,7 @@ function plotCorners( pt )
 
 % ---
 function showImages( hObject, handles )
+    set(0, 'ShowHiddenHandles', 'on')
 
     im = handles.affine.getImage();
     
@@ -240,9 +251,10 @@ function showImages( hObject, handles )
     axes(handles.axesOriginal);
     cla
     axis image
-    imshow(im);
+    h = imshow(im);
+    set(0, 'ShowHiddenHandles', 'off')
+    set(h,'handlevisibility','off');
     
     % Update handles structure
     guidata(hObject, handles);
     
-
