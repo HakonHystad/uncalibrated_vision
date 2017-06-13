@@ -19,43 +19,25 @@ classdef MetricRecovery < Recovery
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function recover(obj)
             
-%             % corners of the rectangle have lines L1 perp L2, L3 perp L4
-%             L1 = cross( obj.corners(1,:)', obj.corners(2,:)' );
-%             L2 = cross( obj.corners(2,:)', obj.corners(3,:)' ); 
-%             L3 = cross( obj.corners(4,:)', obj.corners(3,:)'); 
-%             L4 = cross( obj.corners(1,:)', obj.corners(4,:)');
-%             
-%             % last pair of perpendicular lines we ASSUME a square
-%             L5 = cross( obj.corners(1,:)',obj.corners(3,:)' );
-%             L6 = cross( obj.corners(2,:)',obj.corners(4,:)' );
-
-           
+            % corners of the rectangle have lines L1 perp L2, L3 perp L4
             L1 = cross( obj.corners(1,:)', obj.corners(2,:)' );
-            L2 = cross( obj.corners(2,:)', obj.corners(3,:)' );
+            L2 = cross( obj.corners(2,:)', obj.corners(3,:)' ); 
+            L3 = cross( obj.corners(4,:)', obj.corners(3,:)'); 
+            L4 = cross( obj.corners(1,:)', obj.corners(4,:)');
             
-            L3 = cross( obj.corners(4,:)', obj.corners(5,:)');
-            L4 = cross( obj.corners(5,:)', obj.corners(6,:)');
-            
-            L5 = cross( obj.corners(7,:)',obj.corners(8,:)' );
-            L6 = cross( obj.corners(8,:)',obj.corners(9,:)' );
-            
-            L7 = cross( obj.corners(10,:)',obj.corners(11,:)' );
-            L8 = cross( obj.corners(11,:)',obj.corners(12,:)' );
-            
-            L9 = cross( obj.corners(13,:)',obj.corners(14,:)' );
-            L10 = cross( obj.corners(15,:)',obj.corners(16,:)' );
-            
+            % last pair of perpendicular lines we ASSUME a square
+            L5 = cross( obj.corners(1,:)',obj.corners(3,:)' );
+            L6 = cross( obj.corners(2,:)',obj.corners(4,:)' );
 
-
-
+  
             
             % The A matrix gathering all the normal lines
             A = zeros(5,6);
             A(1,:) = Lines2Ai(L1,L2);
-            A(2,:) = Lines2Ai(L3,L4);           
-            A(3,:) = Lines2Ai(L5,L6);
-            A(4,:) = Lines2Ai(L7,L8);
-            A(5,:) = Lines2Ai(L9,L10);
+            A(2,:) = Lines2Ai(L2,L3);           
+            A(3,:) = Lines2Ai(L3,L4);
+            A(4,:) = Lines2Ai(L4,L1);
+            A(5,:) = Lines2Ai(L5,L6);
 
             [~, ~, V] = svd(A);
 
@@ -68,7 +50,19 @@ classdef MetricRecovery < Recovery
             [U, Sigma, ~] = svd(C);
 
             Hp = [U(:,1)*sqrt(Sigma(1,1)), U(:,2)*sqrt(Sigma(2,2)), U(:,3)/U(3,3)];
-            obj.HpInv = inv(Hp);
+            
+            try
+                obj.HpInv = inv(Hp);
+            catch
+                return;
+            end
+            
+            [ulim,vlim] = size(obj.image);
+            limTest = obj.HpInv*[ulim;vlim;1];limTest = limTest/limTest(3);
+           
+            if max(limTest)>2000
+                return;
+            end
             
             tform = projective2d( obj.HpInv' );
            
@@ -87,6 +81,16 @@ classdef MetricRecovery < Recovery
         function T = getTransformation(obj)
             T = obj.HpInv;
         end% getTransformation
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function corners = getRecoveredCorners(obj)
+            corners = zeros(4,3);
+            p = obj.getCorners();
+            for i = 1:4
+                corners(i,:) = ( obj.HpInv*p(i,:)' )';
+                corners(i,:) = corners(i,:)/corners(i,3);
+            end% for
+        end% getRecoveredCorners
     
     end% methods
     

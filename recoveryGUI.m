@@ -23,7 +23,7 @@ function varargout = recoveryGUI(varargin)
 
 % Edit the above text to modify the response to help recoveryGUI
 
-% Last Modified by GUIDE v2.5 13-Jun-2017 08:45:56
+% Last Modified by GUIDE v2.5 13-Jun-2017 13:58:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -70,47 +70,7 @@ handles.metric = MetricRecovery();
 handles.affine.setImage('building.jpg');
 handles.metric.setImage('building.jpg');
 
-
-% configure image display
-im = imread('building.jpg');
-
-axes(handles.axesAffine);
-axis image
-imshow(im);
-
-axes(handles.axesMetric);
-axis image
-imshow(im);
-
-axes(handles.axesOriginal);
-axis image
-imshow(im);
-
-% configure dragging of corners
-
-xlim = get(handles.axesOriginal,'XLim');
-ylim = get(handles.axesOriginal,'YLim');
-initCornerPos = [   xlim(2)/4,ylim(2)/4;...
-                    xlim(2)*3/4,ylim(2)/4;...
-                    xlim(2)*3/4,ylim(2)*3/4;...
-                    xlim(2)/4,ylim(2)*3/4];
-
-for i = 1:4
-    
-% make custom call for each with an index
-cornerFnc = @(pos) newCornerPos(handles,pos,i);
-    
-cornerHandles = impoint(handles.axesOriginal,initCornerPos(i,:));
-handles.affine.setCorner(i,initCornerPos(i,:));
-handles.metric.setCorner(i,initCornerPos(i,:));
-% link movement of a corner to function
-addNewPositionCallback(cornerHandles,cornerFnc);
-% Construct boundary constraint function
-fcn = makeConstrainToRectFcn('impoint',xlim,ylim);
-% Enforce boundary constraint function using setPositionConstraintFcn
-setPositionConstraintFcn(cornerHandles,fcn);
-
-end% for
+init(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = recoveryGUI_OutputFcn(hObject, eventdata, handles) 
@@ -128,7 +88,13 @@ function openbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to openbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-file = uigetfile({'*.jpg;*.JPEG;*.PNG;*.png'});
+[file,path] = uigetfile({'*.jpg;*.JPEG;*.PNG;*.png'});
+handles.affine.setImage(strcat(path,file));
+
+% Update handles structure
+guidata(hObject, handles);
+
+init(hObject, handles);
 
 
 % --- Executes on button press in resetbutton.
@@ -137,6 +103,7 @@ function resetbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+init( hObject, handles );
 
 % --- Executes on button press in closebutton.
 function closebutton_Callback(hObject, eventdata, handles)
@@ -146,10 +113,136 @@ function closebutton_Callback(hObject, eventdata, handles)
 close all;
 
 
-
-function newCornerPos(handles, pos,corner)
+% --- executes everytime a corner moves
+function newCornerPos(hObject, handles, pos, corner)
     fprintf('Corner %.f moved to [ %.2f, %.2f ]\n',corner,pos(1),pos(2));
     
     handles.affine.setCorner( corner, pos );
     handles.metric.setCorner( corner, pos );
+    
+    % Update handles structure
+    guidata(hObject, handles);
+
+    
+    %plotLines( hObject, handles ); % TODO: fix updating lines
+    
+% --- helper to plot lines between corners
+function plotLines( hObject, handles )
+    axes(handles.axesOriginal);
+
+    p = handles.affine.getCorners();
+    
+    for i=1:3
+        hold on
+        plot( [p(i,1),p(i+1,1)],[p(i,2),p(i+1,2)], 'r' );    
+    end
+    hold on
+    plot( [p(4,1),p(1,1)],[p(4,2),p(1,2)], 'r' );
+   
+
+    
+% --- inititiaion
+function init( hObject, handles )
+    
+    showImages( hObject, handles );
+
+    % configure corners
+
+    xlim = get(handles.axesOriginal,'XLim');
+    ylim = get(handles.axesOriginal,'YLim');
+    initCornerPos = [   xlim(2)/4,ylim(2)/4;...
+                        xlim(2)*3/4,ylim(2)/4;...
+                        xlim(2)*3/4,ylim(2)*3/4;...
+                        xlim(2)/4,ylim(2)*3/4];
+
+    for i = 1:4
+
+    % make custom call for each corner with an index and handle passing
+    cornerFnc = @(pos) newCornerPos(hObject, handles,pos,i);
+
+    cornerHandle = impoint(handles.axesOriginal,initCornerPos(i,:));
+    handles.affine.setCorner(i,initCornerPos(i,:));
+    handles.metric.setCorner(i,initCornerPos(i,:));
+    % link movement of a corner to function
+    addNewPositionCallback(cornerHandle,cornerFnc);
+    % Construct boundary constraint function
+    fcn = makeConstrainToRectFcn('impoint',xlim,ylim);
+    % Enforce boundary constraint function
+    setPositionConstraintFcn(cornerHandle,fcn);
+    
+
+    end% for
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
   
+
+
+% --- Executes on button press in recoverbutton.
+function recoverbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to recoverbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    %%%%%%%%%%%%%%%%%%%%% recover affine %%%%%%%%%%%%%%%%%%%
+    handles.affine.recover();
+    axes(handles.axesAffine);
+    cla
+    imshow(handles.affine.getRecoveredImage);
+    
+    % plot transformed points and following rectangle
+    plotCorners( handles.affine.getRecoveredCorners() );
+    
+    %%%%%%%%%%%%%%%%%%%%% recover metric %%%%%%%%%%%%%%%%%%%
+    
+    handles.metric.recover();
+    axes(handles.axesMetric);
+    cla
+    imshow(handles.metric.getRecoveredImage);
+    
+    
+    % plot transformed points and following rectangle
+    plotCorners( handles.metric.getRecoveredCorners() );
+    
+    
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+function plotCorners( pt )
+    for i=1:4
+        hold on
+        plot( pt(i,1),pt(i,2),'cx' )
+        hold on
+        if i<4
+            plot( [pt(i,1),pt(i+1,1)],[pt(i,2),pt(i+1,2)],'c')
+        end
+    end% for
+    hold on
+    plot( [pt(4,1),pt(1,1)],[pt(4,2),pt(1,2)],'c')
+
+% ---
+function showImages( hObject, handles )
+
+    im = handles.affine.getImage();
+    
+    axes(handles.axesAffine);
+    cla
+    axis image
+    imshow(im);
+
+    axes(handles.axesMetric);
+    cla
+    axis image
+    imshow(im);
+
+    axes(handles.axesOriginal);
+    cla
+    axis image
+    imshow(im);
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+

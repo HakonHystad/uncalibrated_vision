@@ -3,6 +3,7 @@
 % Usage:
 %         - getPointsAtInfinity()
 %         - getTransformation()
+%         - getRecoveredCorners()
         
 %% class definition
 
@@ -12,6 +13,7 @@ classdef AffineRecovery < Recovery
     properties (SetAccess = private)
         ptsAtInf
         Ha
+        recoveredCorners
     end% properties
     
     %% methods
@@ -48,6 +50,12 @@ classdef AffineRecovery < Recovery
             obj.Ha = [  1   0   0;...
                         0   1   0;...
                         Li'];
+            
+            [ulim,vlim] = size(obj.image);
+            limTest = obj.Ha*[ulim;vlim;1];limTest = limTest/limTest(3);
+            if max(limTest)>2000
+                return;
+            end
             tform = projective2d( obj.Ha' );
            
             
@@ -55,6 +63,7 @@ classdef AffineRecovery < Recovery
             if obj.imageOpened
                 obj.recoveredImage = imwarp( obj.image, tform );
                 obj.recovered = true;
+                
             else
                 notify(obj,'noImage');
             end
@@ -70,6 +79,16 @@ classdef AffineRecovery < Recovery
         function T = getTransformation(obj)
             T = obj.Ha;
         end% getTransformation
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function corners = getRecoveredCorners(obj)
+            corners = zeros(4,3);
+            p = obj.getCorners();
+            for i = 1:4
+                corners(i,:) = ( obj.Ha*p(i,:)' )';
+                corners(i,:) = corners(i,:)/corners(i,3);
+            end% for
+        end% getRecoveredCorners
         
     end% methods
 end% AffineRecovery
