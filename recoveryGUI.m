@@ -1,3 +1,4 @@
+
 function varargout = recoveryGUI(varargin)
 % RECOVERYGUI MATLAB code for recoveryGUI.fig
 %      RECOVERYGUI, by itself, creates a new RECOVERYGUI or raises the existing
@@ -63,6 +64,13 @@ guidata(hObject, handles);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% init %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% make objects to use throughout gui
+handles.affine = AffineRecovery();
+handles.metric = MetricRecovery();
+handles.affine.setImage('building.jpg');
+handles.metric.setImage('building.jpg');
+
+
 % configure image display
 im = imread('building.jpg');
 
@@ -80,19 +88,25 @@ imshow(im);
 
 % configure dragging of corners
 
-width = get(handles.axesOriginal,'XLim');
-height = get(handles.axesOriginal,'YLim');
+xlim = get(handles.axesOriginal,'XLim');
+ylim = get(handles.axesOriginal,'YLim');
+initCornerPos = [   xlim(2)/4,ylim(2)/4;...
+                    xlim(2)*3/4,ylim(2)/4;...
+                    xlim(2)*3/4,ylim(2)*3/4;...
+                    xlim(2)/4,ylim(2)*3/4];
 
 for i = 1:4
     
 % make custom call for each with an index
-cornerFnc = @(pos) newCornerPos(pos,i);
+cornerFnc = @(pos) newCornerPos(handles,pos,i);
     
-cornerHandles = impoint(handles.axesOriginal,[50+i*10,50+i*10]);
+cornerHandles = impoint(handles.axesOriginal,initCornerPos(i,:));
+handles.affine.setCorner(i,initCornerPos(i,:));
+handles.metric.setCorner(i,initCornerPos(i,:));
 % link movement of a corner to function
 addNewPositionCallback(cornerHandles,cornerFnc);
 % Construct boundary constraint function
-fcn = makeConstrainToRectFcn('impoint',get(gca,'XLim'),get(gca,'YLim'));
+fcn = makeConstrainToRectFcn('impoint',xlim,ylim);
 % Enforce boundary constraint function using setPositionConstraintFcn
 setPositionConstraintFcn(cornerHandles,fcn);
 
@@ -133,9 +147,9 @@ close all;
 
 
 
-function newCornerPos(pos,corner)
+function newCornerPos(handles, pos,corner)
     fprintf('Corner %.f moved to [ %.2f, %.2f ]\n',corner,pos(1),pos(2));
     
-    
-    
+    handles.affine.setCorner( corner, pos );
+    handles.metric.setCorner( corner, pos );
   

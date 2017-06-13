@@ -17,6 +17,13 @@ classdef AffineRecovery < Recovery
     %% methods
     methods
         
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         function obj = AffineRecovery( filename )
+%             if  nargin == 1
+%                 setImage(filename);
+%             end
+%         end% AffineRecovery constructor
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function recover(obj)
             
