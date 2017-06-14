@@ -90,13 +90,15 @@ function openbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [file,path] = uigetfile({'*.jpg;*.JPEG;*.PNG;*.png'});
-handles.affine.setImage(strcat(path,file));
+if file ~= 0
+    handles.affine.setImage(strcat(path,file));
+    handles.metric.setImage(strcat(path,file));
 
-% Update handles structure
-guidata(hObject, handles);
+    % Update handles structure
+    guidata(hObject, handles);
 
-init(hObject, handles);
-
+    init(hObject, handles);
+end% if
 
 % --- Executes on button press in resetbutton.
 function resetbutton_Callback(hObject, eventdata, handles)
@@ -111,6 +113,7 @@ function closebutton_Callback(hObject, eventdata, handles)
 % hObject    handle to closebutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+clear all;
 close all;
 
 
@@ -129,9 +132,8 @@ function newCornerPos(hObject, handles, pos, corner)
 % --- helper to plot lines between corners
 function plotLines( hObject, handles )
     axes(handles.axesOriginal);
-    cla% rm to work
-    %imshow( handles.affine.getImage() );
-
+    cla
+    
     p = handles.affine.getCorners();
     
     for i=1:3
@@ -198,7 +200,7 @@ function recoverbutton_Callback(hObject, eventdata, handles)
     %%%%%%%%%%%%%%%%%%%%% recover affine %%%%%%%%%%%%%%%%%%%
     handles.affine.recover();
     axes(handles.axesAffine);
-    cla
+    cla reset
     imshow(handles.affine.getRecoveredImage);
     
     % plot transformed points and following rectangle
@@ -208,7 +210,7 @@ function recoverbutton_Callback(hObject, eventdata, handles)
     
     handles.metric.recover();
     axes(handles.axesMetric);
-    cla
+    cla reset
     imshow(handles.metric.getRecoveredImage);
     
     
@@ -234,25 +236,26 @@ function plotCorners( pt )
 
 % ---
 function showImages( hObject, handles )
-    set(0, 'ShowHiddenHandles', 'on')
+    r = groot;
+    set(r, 'ShowHiddenHandles', 'on')
 
     im = handles.affine.getImage();
     
     axes(handles.axesAffine);
-    cla
+    cla reset
     axis image
     imshow(im);
 
     axes(handles.axesMetric);
-    cla
+    cla reset
     axis image
     imshow(im);
 
     axes(handles.axesOriginal);
-    cla
+    cla reset
     axis image
     h = imshow(im);
-    set(0, 'ShowHiddenHandles', 'off')
+    set(r, 'ShowHiddenHandles', 'off')
     set(h,'handlevisibility','off');
     
     % Update handles structure

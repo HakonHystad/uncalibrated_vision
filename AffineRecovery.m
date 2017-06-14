@@ -29,6 +29,7 @@ classdef AffineRecovery < Recovery
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function recover(obj)
             
+            
             % Parallel L1&L3 intersect at xi1, Parallel L2&L4 intersect at xi2
             L1 = cross( obj.corners(1,:)', obj.corners(2,:)' );
             L2 = cross( obj.corners(2,:)', obj.corners(3,:)' ); 
@@ -51,8 +52,15 @@ classdef AffineRecovery < Recovery
                         0   1   0;...
                         Li'];
             
+                    
+            if  ( any(isnan( obj.Ha(:) ))  || outOfBounds(obj) )
+                disp('No valid affine transformation')
+                return;
+            end
+            
+            %tform = affine2d( obj.Ha );
             tform = projective2d( obj.Ha' );
-           
+            
             
             % apply transformation
             if obj.imageOpened
@@ -87,3 +95,22 @@ classdef AffineRecovery < Recovery
         
     end% methods
 end% AffineRecovery
+
+function a = outOfBounds(obj)
+
+    [r,c] = size(obj.image);
+    p(1,:) = [0,0,1];
+    p(2,:) = [c,0,1];
+    p(3,:) = [c,r,1];
+    p(4,:) = [0,r,1];
+    
+    corners = zeros(4,3);
+    for i=1:4
+        corners(i,:) = obj.Ha*p(i,:)'; corners(i,:) = corners(i,:)/corners(i,3);
+    end
+    
+    a = max( abs(corners(:)) )>8000;
+    a = logical( a(:) );
+end% outOfBounds
+   
+   
