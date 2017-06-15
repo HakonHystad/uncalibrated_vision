@@ -67,8 +67,8 @@ guidata(hObject, handles);
 % make objects to use throughout gui
 handles.affine = AffineRecovery();
 handles.metric = MetricRecovery();
-handles.affine.setImage('building.jpg');
-handles.metric.setImage('building.jpg');
+handles.affine.setImage('images/building.jpg');
+handles.metric.setImage('images/building.jpg');
 
 
 init(hObject, handles);
