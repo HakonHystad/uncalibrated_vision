@@ -4,11 +4,12 @@
 %         - getPointsAtInfinity()
 %         - getTransformation()
 %         - getRecoveredCorners()
+
         
 %% class definition
 
 classdef AffineRecovery < Recovery
-    
+        
     %% properties
     properties (SetAccess = private)
         ptsAtInf
@@ -53,7 +54,7 @@ classdef AffineRecovery < Recovery
                         Li'];
             
                     
-            if  ( any(isnan( obj.Ha(:) ))  || outOfBounds(obj) )
+            if  ( any(isnan( obj.Ha(:) ))  || outOfBounds(obj.Ha,size(obj.image),8000) )
                 disp('No valid affine transformation')
                 return;
             end
@@ -96,21 +97,3 @@ classdef AffineRecovery < Recovery
     end% methods
 end% AffineRecovery
 
-function a = outOfBounds(obj)
-
-    [r,c] = size(obj.image);
-    p(1,:) = [0,0,1];
-    p(2,:) = [c,0,1];
-    p(3,:) = [c,r,1];
-    p(4,:) = [0,r,1];
-    
-    corners = zeros(4,3);
-    for i=1:4
-        corners(i,:) = obj.Ha*p(i,:)'; corners(i,:) = corners(i,:)/corners(i,3);
-    end
-    
-    a = max( abs(corners(:)) )>8000;
-    a = logical( a(:) );
-end% outOfBounds
-   
-   

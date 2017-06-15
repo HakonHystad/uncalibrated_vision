@@ -58,7 +58,7 @@ classdef MetricRecovery < Recovery
                 return;
             end
             
-            if  ( any(isnan( obj.HpInv(:) )) || outOfBounds(obj) )
+            if  ( any(isnan( obj.HpInv(:) )) || outOfBounds(obj.HpInv,size(obj.image),8000) )
                 disp('No valid projective transformation')
                 return;
             end
@@ -107,19 +107,3 @@ Ai = [L(1)*M(1) 0.5*(L(1)*M(2) + L(2)*M(1)) L(2)*M(2) ...
         0.5*(L(2)*M(3) + L(3)*M(2)) L(3)*M(3)];
 end
 
-function a = outOfBounds(obj)
-
-    [r,c] = size(obj.image);
-    p(1,:) = [0,0,1];
-    p(2,:) = [c,0,1];
-    p(3,:) = [c,r,1];
-    p(4,:) = [0,r,1];
-    
-    corners = zeros(4,3);
-    for i=1:4
-        corners(i,:) = obj.HpInv*p(i,:)'; corners(i,:) = corners(i,:)/corners(i,3);
-    end
-    
-    a = max( abs(corners(:)) )>8000 ;
-    a = logical( a(:) );
-end% outOfBounds
