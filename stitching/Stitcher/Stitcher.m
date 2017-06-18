@@ -210,17 +210,18 @@ classdef Stitcher < handle
                       offset(1),offset(1)+c-1];% col limits
                   
             % expand canvas if neccessary
-            [canvasR, canvasC, ~] = size( obj.refIm );
+            [canvasR, canvasC, canvasD] = size( obj.refIm );
             if pos(1,2)>canvasR
                 % add rows
-                expansion = zeros( pos(1,2), canvasC );
-                obj.refIm = [ obj.refI ; expansion ];
+                expansion = uint8( zeros( pos(1,2), canvasC, canvasD ) );
+                obj.refIm = [ obj.refIm; expansion ];
+                [canvasR, canvasC, canvasD] = size( obj.refIm );% update size
             end
             
             if pos(2,2)>canvasC
                 % add columns
-                expansion = zeros( canvasR, pos(2,2) );
-                obj.refIm = [ obj.refI , expansion ];
+                expansion = uint8( zeros( canvasR, pos(2,2), canvasD ) );
+                obj.refIm = [ obj.refIm, expansion ];
             end
             
                   
