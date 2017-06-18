@@ -1,3 +1,6 @@
+clear all
+close all
+
 stitcher = Mosaic('images/book3a.jpg');
 
 %imshow( stitcher.getPanoramaImage() )
@@ -44,7 +47,7 @@ stitcher.stitch();
 
 % next tile, ref with panorama (but the same as im1 here)
 
-imshow( stitcher.getPanoramaImage() );
+%imshow( stitcher.getPanoramaImage() );
 
 stitcher.setTileImage('images/book1a.jpg');
 
