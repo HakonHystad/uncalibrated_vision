@@ -168,7 +168,7 @@ classdef Mosaic < handle
             
 
             
-            if  any(isnan( H(:) ))
+            if  any(isnan( H(:) ) )
                 disp('No valid homography')
                 return;
             end
