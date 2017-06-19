@@ -66,6 +66,11 @@ classdef Stitcher < handle
             obj.refOpened = false;
             obj.tileOpened = false;
             
+            % initialize points
+            obj.refPts = zeros( 4, 3 );
+            obj.refPts(:,3) = 1;
+            obj.tilePts = obj.refPts;
+            
             if nargin == 1
                 obj.setRefImage( filename )
             end
@@ -89,11 +94,6 @@ classdef Stitcher < handle
             % make canvas
             obj.refIm = uint8( zeros( r*3, c*3,d ) );% make room for up to ~3 images initially
             obj.refIm(1:r,1:c,:) = im;
-            
-            % initialize points
-            obj.refPts = zeros( 4, 3 );
-            obj.refPts(:,3) = 1;
-            obj.tilePts = obj.refPts;
             
             % store ref size within canvas
             obj.refSize = [ r,c,d ];
@@ -160,7 +160,7 @@ classdef Stitcher < handle
         function stitch( obj, varargin )
             
             % set image if this option is used ('tile','tileImage')
-            if ( nargin>2 && varargin{1} == 'tile' )
+            if ( nargin>2 && strcmp( varargin{1},'tile' ) )
                 obj.setTileImage( varargin{2} );
             end
             
@@ -238,6 +238,7 @@ classdef Stitcher < handle
             
             switch( arg )
                 case 'insert'% replace the pixels if>0, NB: takes a long time
+                
                     for i = 1:r
                         for j = 1:c
                             offs = [offset(2)-1+i,offset(1)-1+j ];
@@ -246,6 +247,7 @@ classdef Stitcher < handle
                             end
                         end
                     end
+                    
                     %%%%%%%%%%%%%%
                 otherwise% default is adding in the tile making the overlapping pixels brighter
                     obj.refIm( pos(1,1):pos(1,2), pos(2,1):pos(2,2),: ) = ...
