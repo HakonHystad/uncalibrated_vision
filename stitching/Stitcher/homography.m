@@ -4,7 +4,7 @@
 % correspond to eachother.
 % optional bbox is 2 points which defines the size of a rectangle.
 
-function [H,offset] = homography( s, p, bbox )
+function [H,offset] = homography( s, p, bbox, varargin )
     
     [r,c] = size(s);
     
@@ -13,24 +13,33 @@ function [H,offset] = homography( s, p, bbox )
         error( 'ERROR @ homography(): Not enough points.' );
     end
     
-    
-    A = zeros( r*3, c*3 );
-    
-    j = 1;
-    for i = 1:3:(r*3-2)
-        s_skew = Skew( s(j,:)' );
-        A( i:i+2, : ) = [  p(j,1)*s_skew     p(j,2)*s_skew     p(j,3)*s_skew     ];
-        j = j+1;
-    end% i
-    
-    
-    [~, ~ , v] = svd(A);
-    
-    h = v(:,9);
-    h = h/h(9);% normalize
-    
-    H = [ h(1:3)    h(4:6)  h(7:9)  ];
-    
+    if ( nargin>3 && strcmp( varargin{1}, 'ransac' ) )
+        nargs = length( varargin );
+        if nargs>0
+            H = homographyRANSAC(s,p, varargin{2:nargs});
+        else
+            H = homographyRANSAC(s,p);
+        end
+    else
+        
+        A = zeros( r*3, c*3 );
+        
+        j = 1;
+        for i = 1:3:(r*3-2)
+            s_skew = Skew( s(j,:)' );
+            A( i:i+2, : ) = [  p(j,1)*s_skew     p(j,2)*s_skew     p(j,3)*s_skew     ];
+            j = j+1;
+        end% i
+        
+        
+        [~, ~ , v] = svd(A);
+        
+        h = v(:,9);
+        h = h/h(9);% normalize
+        
+        H = [ h(1:3)    h(4:6)  h(7:9)  ];
+    end% if ransac
+        
     % if a bounding box is specified we will calc the offset from [1,1]
     % - thank you peter corke
     if nargin>2

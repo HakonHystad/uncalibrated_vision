@@ -127,16 +127,18 @@ classdef Stitcher < handle
             switch( imageId )
                 case 'ref'
                     
-                    if ( nargin>4 && options == 'fill' )% replace matrix
-                        obj.refPts = [ coordinate, 1 ];
+                    if ( nargin>4 && strcmp( options, 'fill' ) )% replace matrix
+                        obj.refPts = ones( length( coordinate ), 3 );
+                        obj.refPts(:,1:2) = coordinate;
                     elseif ptNr<=4% or insert
                         obj.refPts( ptNr, 1:2 ) = coordinate(1:2);
                     end
                     
                 case 'tile'
                     
-                    if ( nargin>4 && options == 'fill' )% replace matrix
-                        obj.tilePts = [ coordinate, 1 ];
+                    if ( nargin>4 && strcmp( options, 'fill' ) )% replace matrix
+                        obj.tilePts = ones( length( coordinate ), 3 );
+                        obj.tilePts(:,1:2) = coordinate;
                     elseif ptNr<=4% or insert
                         obj.tilePts( ptNr, 1:2 ) = coordinate(1:2);
                     end
@@ -169,9 +171,18 @@ classdef Stitcher < handle
                 error( 'ERROR @ stitch(): missing image' )
             end
             
+            
             % calc homography, offset is foud with respect to ref ([1,1])
             [r, c, ~] = size( obj.tileIm );
-            [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
+            if length(obj.refPts)>4% do inlier detection
+                [H,offset] = homography(    obj.refPts, obj.tilePts, [r,c], 'ransac',...
+                                            'threshold',10, 'iterations',100000,...
+                                            'samplesize',4);
+            else
+                [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
+            end
+            
+            %offset
             
             if  ( any(isnan( H(:) )) || any( abs(offset)>[maxImSize(),maxImSize()] ) )
                 error('ERROR @ stitch(): No valid homography');
@@ -226,7 +237,7 @@ classdef Stitcher < handle
             
                   
             % update image size within canvas
-            obj.refSize(1:2) = [ max(obj.refSize(1),pos(1,2)),max(obj.refSize(2),pos(2,2))];
+            obj.refSize(1:2) = [ max( obj.refSize(1),pos(1,2) ),max( obj.refSize(2),pos(2,2) )];
             
             % merge it with the preferred option
             arg = '';
