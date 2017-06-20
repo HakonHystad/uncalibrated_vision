@@ -1,8 +1,9 @@
 % Using RANSAC on a function to calculate the best fitting model from 2
 % sets of points
 
-function H = homographyRANSAC( s, p, varargin )
+function [H,inliersOut] = homographyRANSAC( s, p, varargin )
     H = eye(3);
+    inliersOut = [];
     len = length( s );
     
     thresh = 0.1;% threshold
@@ -72,6 +73,7 @@ function H = homographyRANSAC( s, p, varargin )
         if length( inlier ) > nmaxInlier
             %dist
             H = homography( s(inlier,:), p(inlier,:) );
+            inliersOut = inlier;
             nmaxInlier = length( inlier );
             
             % update number of samples

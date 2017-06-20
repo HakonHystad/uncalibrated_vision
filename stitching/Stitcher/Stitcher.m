@@ -159,7 +159,7 @@ classdef Stitcher < handle
             im = obj.tileIm;
         end% getTileImage
         
-        function status = stitch( obj, varargin )
+        function [status,inliersOut] = stitch( obj, varargin )
             status = true;
             
             % set image if this option is used ('tile','tileImage')
@@ -178,13 +178,13 @@ classdef Stitcher < handle
             % calc homography, offset is foud with respect to ref ([1,1])
             [r, c, ~] = size( obj.tileIm );
             if length(obj.refPts)>4% do inlier detection
-                [H,offset] = homography(    obj.refPts, obj.tilePts, [r,c], 'ransac',...
-                                            'threshold',10, 'iterations',100000,...
+                [H,offset, inliersOut] = homography(    obj.refPts, obj.tilePts, [r,c], 'ransac',...
+                                            'threshold',0.1, 'iterations',100000,...
                                             'samplesize',4);
+                inliersOut = length(inliersOut)/length(obj.refPts);% for testing
             else
                 [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
             end
-            
             
             if  (   any(isnan( H(:) ))...
                     || any( abs(offset)>[maxImSize(),maxImSize()] )...

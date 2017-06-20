@@ -4,8 +4,8 @@
 % correspond to eachother.
 % optional bbox is 2 points which defines the size of a rectangle.
 
-function [H,offset] = homography( s, p, bbox, varargin )
-    
+function [H,offset,inliersOut] = homography( s, p, bbox, varargin )
+    inliersOut = [];
     [r,c] = size(s);
     
     % validate input, should prob do the same for p..
@@ -14,12 +14,21 @@ function [H,offset] = homography( s, p, bbox, varargin )
     end
     
     if ( nargin>3 && strcmp( varargin{1}, 'ransac' ) )
+        
+        % normalize data
+        [ s, Ts ] = normalize(s);
+        [ p, Tp ] = normalize(p);
+        
         nargs = length( varargin );
         if nargs>0
-            H = homographyRANSAC(s,p, varargin{2:nargs});
+            [H, inliersOut] = homographyRANSAC(s,p, varargin{2:nargs});
         else
-            H = homographyRANSAC(s,p);
+            [H, inliersOut] = homographyRANSAC(s,p);
         end
+        
+        % denormalize
+        H = Ts\H*Tp;
+        H = H/H(3,3);
     else
         
         A = zeros( r*3, c*3 );
@@ -38,6 +47,7 @@ function [H,offset] = homography( s, p, bbox, varargin )
         h = h/h(9);% normalize
         
         H = [ h(1:3)    h(4:6)  h(7:9)  ];
+        
     end% if ransac
         
     % if a bounding box is specified we will calc the offset from [1,1]
