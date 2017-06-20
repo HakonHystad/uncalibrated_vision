@@ -182,8 +182,6 @@ classdef Stitcher < handle
                 [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
             end
             
-            %offset
-            
             if  ( any(isnan( H(:) )) || any( abs(offset)>[maxImSize(),maxImSize()] ) )
                 error('ERROR @ stitch(): No valid homography');
                 return;

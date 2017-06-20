@@ -23,7 +23,7 @@ function H = homographyRANSAC( s, p, varargin )
     end% for i 
     
     nmaxInlier = 3;
-    condCount = 0;
+    %condCount = 0;
     
     for i = 1:nit
         %% get a random sample of ssize points
@@ -39,10 +39,10 @@ function H = homographyRANSAC( s, p, varargin )
         %% compute the homography of the samples
         [Htest,~] = homography( spts, ppts );
         
-        % check singularity
-        if rcond(Htest)<1e-6
-            condCount = condCount +1;
-            continue;
+        % check for singularity
+        if rcond(Htest)<1e-7
+            %condCount = condCount +1;
+            continue;% bad homography, discard
         end
         
         %% find difference between data with a homography in between
@@ -50,10 +50,7 @@ function H = homographyRANSAC( s, p, varargin )
         %tPoints = tPoints./repmat(tPoints(:,3),1,3);% non-homogeneous
         
         invPoints = (Htest\s')';
-        RinvPoints = p;
         %invPoints = invPoints./repmat(invPoints(:,3),1,3);% non-homogeneous
-        
-        %(p-invPoints)
         
         % symmetric distance
         dist = sum((p-invPoints).^2,2) + sum((s-tPoints).^2,2);
@@ -70,9 +67,9 @@ function H = homographyRANSAC( s, p, varargin )
             nmaxInlier = length( inlier );
         end
     end% for i
-    nmaxInlier
-    condCount
-    
+%     nmaxInlier
+%     condCount
+%     
     
 end% homographyRANSAC
         

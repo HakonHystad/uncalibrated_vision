@@ -22,7 +22,7 @@ function varargout = stitching_gui(varargin)
 
 % Edit the above text to modify the response to help stitching_gui
 
-% Last Modified by GUIDE v2.5 19-Jun-2017 09:22:54
+% Last Modified by GUIDE v2.5 20-Jun-2017 08:28:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -62,7 +62,7 @@ guidata(hObject, handles);
 % uiwait(handles.figure1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-addpath('Stitcher');
+%addpath('Stitcher');
 
 % make objects to use throughout gui
 handles.stitcher = Stitcher('images/book1a.jpg');
@@ -136,15 +136,15 @@ function stitchButton_Callback(hObject, eventdata, handles)
 % hObject    handle to stitchButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.figure1, 'pointer', 'watch')
-drawnow;
+    set(handles.figure1, 'pointer', 'watch')
+    drawnow;
     if get( handles.resCheckbox, 'Value' )% check if high res is set
         handles.stitcher.stitch('tile', handles.tile, 'insert');
     else
         handles.stitcher.stitch('tile', handles.tile);
     end
-set(handles.figure1, 'pointer', 'arrow')
-
+    set(handles.figure1, 'pointer', 'arrow')
+    
     axes( handles.refAxes );
     cla reset% clear axes
     imshow( handles.stitcher.getRefImage() );
@@ -153,8 +153,8 @@ set(handles.figure1, 'pointer', 'arrow')
     
     % Update handles structure
     guidata(hObject, handles);
-
-
+    
+    
     
 
 
@@ -275,3 +275,35 @@ function newCornerPos(hObject, handles, pos, pt, im)
     
     % Update handles structure
     guidata(hObject, handles);
+
+
+% --- Executes on button press in autoStitchButton.
+function autoStitchButton_Callback(hObject, eventdata, handles)
+% hObject    handle to autoStitchButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    im1 = rgb2gray( handles.stitcher.getRefImage() );
+    im2 = rgb2gray( handles.stitcher.getTileImage() );
+    
+    % detect
+    pt1 = detectSURFFeatures( im1 );
+    pt2 = detectSURFFeatures( im2 );
+    % extract
+    [ft1, validPt1] = extractFeatures( im1, pt1 );
+    [ft2, validPt2] = extractFeatures( im2, pt2 );
+    % find common features
+    sharedIndex = matchFeatures( ft1, ft2 );
+    mtchPt1 = validPt1( sharedIndex(:,1), : );
+    mtchPt2 = validPt2( sharedIndex(:,2), : );
+    
+    n = length(sharedIndex);% nr of features to use
+    figure, showMatchedFeatures( im1, im2, mtchPt1(1:n), mtchPt2( 1:n ) );
+
+    refPt = mtchPt1( 1:n ).Location;
+    tilePt = mtchPt2( 1:n ).Location;
+
+
+    handles.stitcher.setPoints( 1, refPt, 'ref', 'fill' );
+    handles.stitcher.setPoints( 1, tilePt, 'tile', 'fill' );
+
+    stitchButton_Callback(hObject, eventdata, handles);
