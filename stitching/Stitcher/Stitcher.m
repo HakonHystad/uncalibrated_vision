@@ -159,7 +159,8 @@ classdef Stitcher < handle
             im = obj.tileIm;
         end% getTileImage
         
-        function stitch( obj, varargin )
+        function status = stitch( obj, varargin )
+            status = true;
             
             % set image if this option is used ('tile','tileImage')
             if ( nargin>2 && strcmp( varargin{1},'tile' ) )
@@ -168,7 +169,9 @@ classdef Stitcher < handle
             
             % no point in going further without both images
             if ( ~obj.refOpened || ~obj.tileOpened ) 
-                error( 'ERROR @ stitch(): missing image' )
+                warning( 'ERROR @ stitch(): missing new image' )
+                status = false;
+                return;
             end
             
             
@@ -182,8 +185,12 @@ classdef Stitcher < handle
                 [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
             end
             
-            if  ( any(isnan( H(:) )) || any( abs(offset)>[maxImSize(),maxImSize()] ) )
-                error('ERROR @ stitch(): No valid homography');
+            
+            if  (   any(isnan( H(:) ))...
+                    || any( abs(offset)>[maxImSize(),maxImSize()] )...
+                    || isequal(H,eye(3)) )
+                warning('ERROR @ stitch(): No valid homography');
+                status = false;
                 return;
             end
             

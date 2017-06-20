@@ -138,18 +138,23 @@ function stitchButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
     set(handles.figure1, 'pointer', 'watch')
     drawnow;
+    
     if get( handles.resCheckbox, 'Value' )% check if high res is set
-        handles.stitcher.stitch('tile', handles.tile, 'insert');
+        valid = handles.stitcher.stitch('tile', handles.tile, 'insert');
     else
-        handles.stitcher.stitch('tile', handles.tile);
+        valid = handles.stitcher.stitch('tile', handles.tile);
     end
     set(handles.figure1, 'pointer', 'arrow')
     
-    axes( handles.refAxes );
-    cla reset% clear axes
-    imshow( handles.stitcher.getRefImage() );
-    configRefPts( hObject, handles );
-    
+    if valid
+        axes( handles.refAxes );
+        cla reset% clear axes
+        imshow( handles.stitcher.getRefImage() );
+        configRefPts( hObject, handles );
+    else
+        msgbox('Could not estimate homography');
+    end
+        
     
     % Update handles structure
     guidata(hObject, handles);

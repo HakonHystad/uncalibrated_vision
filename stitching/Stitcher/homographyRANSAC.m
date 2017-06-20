@@ -6,7 +6,7 @@ function H = homographyRANSAC( s, p, varargin )
     len = length( s );
     
     thresh = 0.1;% threshold
-    nit = 2000;% iterations
+    nit = 2000;% worst case nr of iterations
     ssz = 4;% sample size
     
     
@@ -25,7 +25,14 @@ function H = homographyRANSAC( s, p, varargin )
     nmaxInlier = 3;
     %condCount = 0;
     
-    for i = 1:nit
+    % addaptive number of samples
+    i = 0;
+    pInlierSample = 0.99;% probability that at least 1 sample is free from outliers
+    pOutlier = 0.5;% initial probability that a datapoint is an outlier
+    watchDog = nit;
+    
+    while( i<nit && i<watchDog )
+        i = i+1;
         %% get a random sample of ssize points
         sIndex = randperm( len, ssz );
         % s
@@ -59,17 +66,23 @@ function H = homographyRANSAC( s, p, varargin )
         
         %% find inliers within threshold
         inlier = find( dist<thresh );
+        nInlier = length( inlier );
         
         %% if this is the most inliers so far calc the homography
         if length( inlier ) > nmaxInlier
             %dist
             H = homography( s(inlier,:), p(inlier,:) );
             nmaxInlier = length( inlier );
+            
+            % update number of samples
+            pOutlier = 1 - nInlier/len;
+            nit = log(1-pInlierSample)/log(1-(1-pOutlier)^ssz );
+        
         end
-    end% for i
+    end% while i<sample nr
 %     nmaxInlier
 %     condCount
-%     
+%      nit
     
 end% homographyRANSAC
         
