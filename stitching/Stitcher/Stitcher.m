@@ -1,4 +1,4 @@
-%% Stitcher - a class for making a mosaic/stitching images together.
+    %% Stitcher - a class for making a mosaic/stitching images together.
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%% methods %%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -80,7 +80,11 @@ classdef Stitcher < handle
         function setRefImage( obj, filename )
             
             % load image
-            im = imread( filename );
+            if ischar( filename )% from file
+                im = imread( filename );
+            else% or direct
+                im = filename;
+            end
             
             % check image size
             [r,c,d] = size( im );
@@ -105,7 +109,11 @@ classdef Stitcher < handle
         function setTileImage( obj, filename )
             
             % load image
-            im = imread( filename );
+            if ischar( filename )% from file
+                im = imread( filename );
+            else% or direct
+                im = filename;
+            end
             
             % check image size
             [r,c,~] = size( im );
@@ -181,7 +189,11 @@ classdef Stitcher < handle
                 [H,offset, inliersOut] = homography(    obj.refPts, obj.tilePts, [r,c], 'ransac',...
                                             'threshold',0.1, 'iterations',100000,...
                                             'samplesize',4);
-                inliersOut = length(inliersOut)/length(obj.refPts);% for testing
+                %inliersOut = length(inliersOut)/length(obj.refPts);% for testing
+                
+                % reset tile and ref points
+                obj.tilePts = ones(4,3);
+                obj.refPts = obj.tilePts;
             else
                 [H,offset] = homography( obj.refPts, obj.tilePts, [r,c] );
             end
