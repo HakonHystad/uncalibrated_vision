@@ -12,7 +12,7 @@ When doing automatic stitching the corresponding points have to be found through
 
 # usage
 
-The stitching is performed through a GUI which uses a stitching class. The user may specify 4 correlating points in the two specified images and perform a stitching. More tile images can be added to the reference if the user so pleases. If the automatic option is used SURF features are found and matched and a homography is fitted to the normalized data with RANSAC.
+The stitching is performed through a GUI which uses a stitching class. The user may specify 4 correlating points in the two specified images and perform a stitching. More tile images can be added to the (right of the) reference if the user so pleases. If the automatic option is used SURF features are found and matched and a homography is fitted to the normalized data with RANSAC.
 
 Options:
 - 'High res' will switch out (all non-zero) pixels of the warped tile image with the reference instead of adding them on top of each other. Note that this can take some time.  
