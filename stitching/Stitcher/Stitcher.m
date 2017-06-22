@@ -138,7 +138,7 @@ classdef Stitcher < handle
                     if ( nargin>4 && strcmp( options, 'fill' ) )% replace matrix
                         obj.refPts = ones( length( coordinate ), 3 );
                         obj.refPts(:,1:2) = coordinate;
-                    elseif ptNr<=4% or insert
+                    elseif ( ptNr<=4 && ptNr>0 )% or insert
                         obj.refPts( ptNr, 1:2 ) = coordinate(1:2);
                     end
                     
@@ -147,7 +147,7 @@ classdef Stitcher < handle
                     if ( nargin>4 && strcmp( options, 'fill' ) )% replace matrix
                         obj.tilePts = ones( length( coordinate ), 3 );
                         obj.tilePts(:,1:2) = coordinate;
-                    elseif ptNr<=4% or insert
+                    elseif ( ptNr<=4 && ptNr>0 )% or insert
                         obj.tilePts( ptNr, 1:2 ) = coordinate(1:2);
                     end
                     
@@ -174,6 +174,7 @@ classdef Stitcher < handle
             if ( nargin>2 && strcmp( varargin{1},'tile' ) )
                 obj.setTileImage( varargin{2} );
             end
+            
             
             % no point in going further without both images
             if ( ~obj.refOpened || ~obj.tileOpened ) 

@@ -22,7 +22,7 @@ function varargout = stitching_gui(varargin)
 
 % Edit the above text to modify the response to help stitching_gui
 
-% Last Modified by GUIDE v2.5 20-Jun-2017 08:28:39
+% Last Modified by GUIDE v2.5 22-Jun-2017 09:20:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,7 +67,8 @@ addpath('./Stitcher');
 % make objects to use throughout gui
 handles.stitcher = Stitcher('images/book1a.jpg');
 handles.stitcher.setTileImage('images/book2a.jpg');
-handles.tile = 'images/book2a.jpg';
+handles.refIm = handles.stitcher.getRefImage();
+handles.tileIm = handles.stitcher.getTileImage();
 
 % display the images
 dispImages( hObject, handles );
@@ -96,6 +97,7 @@ function setRefButton_Callback(hObject, eventdata, handles)
     [file,path] = uigetfile({'*.jpg;*.JPEG;*.PNG;*.png'});
     if file ~= 0
         handles.stitcher.setRefImage(strcat(path,file));
+        handles.refIm = handles.stitcher.getRefImage(); 
 
         axes( handles.refAxes );
         cla reset% clear axes
@@ -118,7 +120,7 @@ function setTileButton_Callback(hObject, eventdata, handles)
     [file,path] = uigetfile({'*.jpg;*.JPEG;*.PNG;*.png'});
     if file ~= 0
         handles.stitcher.setTileImage(strcat(path,file));
-        handles.tile = strcat(path,file);
+        handles.tileIm = handles.stitcher.getTileImage();
 
         axes( handles.tileAxes );
         cla reset% clear axes
@@ -136,17 +138,19 @@ function stitchButton_Callback(hObject, eventdata, handles)
 % hObject    handle to stitchButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    % indicate wating
     set(handles.figure1, 'pointer', 'watch')
     drawnow;
     
     if get( handles.resCheckbox, 'Value' )% check if high res is set
-        valid = handles.stitcher.stitch('tile', handles.tile, 'insert');
+        valid = handles.stitcher.stitch('tile', handles.tileIm, 'insert');
     else
-        valid = handles.stitcher.stitch('tile', handles.tile);
+        valid = handles.stitcher.stitch('tile', handles.tileIm);
     end
     set(handles.figure1, 'pointer', 'arrow')
     
     if valid
+        %handles.refIm = handles.stitcher.getRefImage();
         axes( handles.refAxes );
         cla reset% clear axes
         imshow( handles.stitcher.getRefImage() );
@@ -176,12 +180,15 @@ function resCheckbox_Callback(hObject, eventdata, handles)
 function dispImages(hObject, handles)
     % ref
     axes( handles.refAxes );
+    cla reset;
     axis image
-    imshow( handles.stitcher.getRefImage() );
+    cla reset;
+    imshow( handles.refIm );
     % tile
     axes( handles.tileAxes );
+    cla reset;
     axis image
-    imshow( handles.stitcher.getTileImage() );
+    imshow( handles.tileIm );
     
 % ---
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,6 +294,7 @@ function autoStitchButton_Callback(hObject, eventdata, handles)
 % hObject    handle to autoStitchButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
     im1 = rgb2gray( handles.stitcher.getRefImage() );
     im2 = rgb2gray( handles.stitcher.getTileImage() );
     
@@ -302,7 +310,9 @@ function autoStitchButton_Callback(hObject, eventdata, handles)
     mtchPt2 = validPt2( sharedIndex(:,2), : );
     
     n = length(sharedIndex);% nr of features to use
-    figure, showMatchedFeatures( im1, im2, mtchPt1(1:n), mtchPt2( 1:n ) );
+    if get( handles.show_features_checkbox, 'Value' )% check if matching features is displayed
+        figure, showMatchedFeatures( im1, im2, mtchPt1(1:n), mtchPt2( 1:n ) );
+    end
 
     refPt = mtchPt1( 1:n ).Location;
     tilePt = mtchPt2( 1:n ).Location;
@@ -312,3 +322,34 @@ function autoStitchButton_Callback(hObject, eventdata, handles)
     handles.stitcher.setPoints( 1, tilePt, 'tile', 'fill' );
 
     stitchButton_Callback(hObject, eventdata, handles);
+    
+    % Update handles structure
+    guidata(hObject, handles);
+
+
+% --- Executes on button press in reset_button.
+function reset_button_Callback(hObject, eventdata, handles)
+% hObject    handle to reset_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % display the images
+    dispImages( hObject, handles );
+
+    % set up dragpoints
+    configRefPts( hObject, handles );
+    configTilePts( hObject, handles );
+    
+    handles.stitcher.setRefImage( handles.refIm );
+    handles.stitcher.setTileImage( handles.tileIm );
+    % Update handles structure
+    guidata(hObject, handles);
+
+
+% --- Executes on button press in show_features_checkbox.
+function show_features_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to show_features_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of show_features_checkbox
