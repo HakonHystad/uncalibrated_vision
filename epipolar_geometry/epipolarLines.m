@@ -16,6 +16,9 @@ im2 = wiener2(im2,[5,5]);
 %% detect corresponding features
 pt1 = detectSURFFeatures( im1 );
 pt2 = detectSURFFeatures( im2 );
+% 
+%  pt1 = detectHarrisFeatures( im1 );
+%  pt2 = detectHarrisFeatures( im2 );
 
 [ft1, validPt1] = extractFeatures( im1, pt1 );
 [ft2, validPt2] = extractFeatures( im2, pt2 );
@@ -49,7 +52,7 @@ plottablePts1 = lineToBorderPoints( epipolarL1, size( im1 ) );
 plottablePts2 = lineToBorderPoints( epipolarL2, size( im2 ) );
 
 hold on
-subplot(1,2,1)
+subplot(1,2,1)  
 line( plottablePts1( :,[1,3] )', plottablePts1(:,[2,4])');
 hold off
 
@@ -57,6 +60,11 @@ hold on
 subplot(1,2,2)
 line( plottablePts2( :,[1,3] )', plottablePts2(:,[2,4])');
 hold off
-
+% 
+% %% recitfy
+% [t1, t2] = estimateUncalibratedRectification(F,mtchPt1(inlierIndex),mtchPt2(inlierIndex),size(im2rgb));
+% [I1Rect,I2Rect] = rectifyStereoImages(im1rgb,im2rgb,t1,t2);
+% figure;
+% imshow(stereoAnaglyph(I1Rect,I2Rect));
 
 
