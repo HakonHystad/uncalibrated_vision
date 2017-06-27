@@ -21,9 +21,10 @@ sharedIndex = matchFeatures( ft1, ft2 );
 mtchPt1 = validPt1( sharedIndex(:,1), : );
 mtchPt2 = validPt2( sharedIndex(:,2), : );
 
+
 %% estimate fundamental matrix 
 [ F, inlierIndex ] = estimateFundamentalMatrix( mtchPt1, mtchPt2,...
-                'Method','RANSAC','NumTrials',2000,'DistanceThreshold',1e-3 );
+                'Method','RANSAC','NumTrials',10000,'DistanceThreshold',1e-4 );
 pts1 = mtchPt1( inlierIndex ).Location;
 pts2 = mtchPt2( inlierIndex ).Location;
 

@@ -1,14 +1,17 @@
 % Estimates the fundamental matrix from a set of stereo images and plots
 % the epipolar lines.
-
+% NOTE: the fundamental matrix estimation is tricky and might place the epipole wrong.
+% The results change for every run because of RANSAC.
 
 close all
 clear all
 
 %% load images
 % add two overlapping images here to see the effect of camera movement on epipolar lines.
-imx = imread('images/book1a.jpg');
-imxp = imread('images/book2a.jpg');
+imx = imread('images/building.jpg');
+imxp = imread('images/building2.jpg');
+
+
 
 %% estimate the fundamental matrix
 [F,inliersX, inliersXP] = extractF(imx,imxp);
@@ -27,6 +30,7 @@ epipolarL2 = epipolarLine( F, inliersX(1:len,:) );
 %% and show the results
 
 % plot inlier points
+figure
 subplot(1,2,1),imshow( imx );
 hold on
 plot( inliersX(1:len,1), inliersX(1:len,2),'go' );
@@ -41,12 +45,12 @@ plot( inliersXP(1:len,1), inliersXP(1:len,2),'g+' );
 plottablePts1 = lineToBorderPoints( epipolarL1, size( imx ) );
 plottablePts2 = lineToBorderPoints( epipolarL2, size( imxp ) );
 
+subplot(1,2,1)
 hold on
-subplot(1,2,1)  
 line( plottablePts1( :,[1,3] )', plottablePts1(:,[2,4])', 'Color','cyan');
 hold off
 
-hold on
 subplot(1,2,2)
+hold on
 line( plottablePts2( :,[1,3] )', plottablePts2(:,[2,4])', 'Color','cyan');
 hold off
