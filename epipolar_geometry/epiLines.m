@@ -6,6 +6,7 @@ close all
 clear all
 
 %% load images
+% add two overlapping images here to see the effect of camera movement on epipolar lines.
 imx = imread('images/book1a.jpg');
 imxp = imread('images/book2a.jpg');
 
