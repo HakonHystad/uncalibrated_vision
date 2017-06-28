@@ -30,7 +30,7 @@ epipolarL2 = epipolarLine( F, inliersX(1:len,:) );
 %% and show the results
 
 % plot inlier points
-figure
+figure('units','normalized','outerposition',[0 0 1 1])
 subplot(1,2,1),imshow( imx );
 hold on
 plot( inliersX(1:len,1), inliersX(1:len,2),'go' );
