@@ -41,3 +41,5 @@ eGeometry.plotEpiLine(2,len);
 % plot epipole of image 2 due to camera center of image 1
 eGeometry.plotEpiPole(2);
 hold off
+
+
