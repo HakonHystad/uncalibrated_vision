@@ -8,22 +8,8 @@
 im1 = imread('images/building.jpg');
 im2 = imread('images/building2.jpg');
 
-% it = 10;
-% meanF = zeros(3);
-% for i=1:it
-%    
-% eGeometry = Epipolar( im1, im2 );
-% meanF = meanF + eGeometry.F;
-% 
-% end
-% 
-% meanF = meanF./it
-% 
-% eGeometry.F = meanF;
-
-
 eGeometry = Epipolar( im1, im2 );
-test = eGeometry.F
+
 len = length( eGeometry.eL1 );
 if len>10
     len = 10;
