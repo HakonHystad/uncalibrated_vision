@@ -21,8 +21,8 @@ function pts = triangulate2d( x, xp, Px, Pxp )
         Txp = Tx;
     end
 
-    P1 = Tx*Px;
-    P2 = Txp*Pxp;
+    Px = Tx*Px;
+    Pxp = Txp*Pxp;
     
     pts = zeros( r, 3 );
     

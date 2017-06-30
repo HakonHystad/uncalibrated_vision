@@ -1,8 +1,8 @@
 %% Epipolar - a base class for holding the epipolar geometric information shared by two images. 
 %
 % %%%%%%%%%%%%%%%%%%METHODS%%%%%%%%%%%%%%%%%%%%%%
-% Epipolar( im1, im2 )		- Constructor, estimates the fundamental matrix
-% and other epipolar properties.
+% Epipolar( im1, im2, P1, P2 )		- Constructor, estimates the fundamental matrix
+% and other epipolar properties, optional camera matrix arguments.
 % plotEpiLine(option, n)		- Plots n epipolar line of image <1 or 2>
 % plotEpiPole(option)		- Plots the epipole of image <1 or 2>
 % plotInlierFeatures(option, n)	- Plots n inliers of image <1 or 2> 
@@ -22,6 +22,7 @@
 %         
 %         in1%    inliers of corresponding points in image 1 
 %         in2%    inliers of corresponding points in image 2
+        
 
 %% class definition
 
@@ -42,6 +43,10 @@ classdef Epipolar < handle
         in1%    inliers of corresponding points in image 1 
         in2%    inliers of corresponding points in image 2
         
+        worldPts%   results of triangulation
+        P1%     camera matrix 1, will be canonical if not specified
+        P2%     camera matrix 2, will be caononical if not specified
+        
     end% properties
     
     
@@ -49,7 +54,7 @@ classdef Epipolar < handle
     methods
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function obj = Epipolar( im1, im2 )% Constructor
+        function obj = Epipolar( im1, im2, P1, P2 )% Constructor
             obj.im1 = im1;
             obj.im2 = im2;
             
@@ -69,6 +74,17 @@ classdef Epipolar < handle
             % of image 2 due to camera center in image 1 (left nullspace)
             obj.eP2 = null(obj.F');
             obj.eP2 = obj.eP2./obj.eP2(3);
+            
+            % set/construct camera matrices
+            if nargin == 4
+                obj.P1 = P1;
+                obj.P2 = P2;
+            else
+                % Let camera 1 be origio and camera 2 be a Canonical
+                % decomposition, Hartley/Zisserman p.256
+                obj.P1 = [eye(3),[  0   0   1   ]'];
+                obj.P2 = [ Skew(obj.eP2)*obj.F, obj.eP2];
+            end
 
         end% Epipolar constructor
         
@@ -126,6 +142,13 @@ classdef Epipolar < handle
             end
                     
         end% plotInlierFeatures
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function worldPts = triangulate( obj )
+            worldPts = triangulate2d(obj.in1, obj.in2,obj.P1,obj.P2); 
+            obj.worldPts = worldPts;
+        end
+
         
     end% methods
     

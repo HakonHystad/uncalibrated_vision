@@ -1,17 +1,13 @@
+clear all
+close all
+
 %% load images
 imx = imread('images/shelf1.jpg');
 imxp = imread('images/shelf2.jpg');
 
-%% estimate the fundamental matrix
+%% estimate the fundamental matrix and triangulate
 epi = Epipolar(imx,imxp);
-%% get camera matrices
-% Let camera 1 be origio and camera 2 be a Canonical
-% decomposition, Hartley/Zisserman p.256
-PX = [eye(3),[  0   0   1   ]'];
-PXP = [ Skew(epi.eP2)*epi.F, epi.eP2];
-
-%% triangulate inliers
-worldPts = triangulate2d(epi.in1(:,1:2), epi.in2(:,1:2),PX,PXP); 
+worldPts = epi.triangulate();
 
 %% show results
 imshow( imx );
