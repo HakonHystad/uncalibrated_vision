@@ -36,7 +36,9 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
     for i=1:r
         
         if optimal
+%             xp(i,:)*F*x(i,:)'
             [x(i,:), xp(i,:)] = correctedCorrespondance(x(i,1:2),xp(i,1:2),F);
+%             xp(i,:)*F*x(i,:)'
         end
         
         A = [   x(i,1)*Px(3,:)-Px(1,:);...
@@ -59,10 +61,13 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     %% translate to origin
     T = eye(3); T(1,3)=-initialx(1); T(2,3)=-initialx(2);
     Tp = eye(3); Tp(1,3)=-initialxp(1); Tp(2,3)=-initialxp(2);
+    
     Tinv = inv(T);
     Tpinv = inv(Tp);
     
+    
     F = Tpinv'*F*Tinv;% new corresponding F
+%     F = Tp'\F/T;
     % compute new normlized epipoles
     e = null(F); e = e./norm(e);
     ep = null(F'); ep = ep./norm(ep);
@@ -105,8 +110,10 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     %% transfer the points to original basis
     x = ( Tinv*R'*x' )';
     xp =( Tpinv*Rp'*xp' )';
+%     x = (T\R'*x')';
+%     xp = (T\Rp'*xp')';
     x = x./x(end);
-    xp = xp./x(end);
+    xp = xp./xp(end);
     
   
 end% correctedCorrespondance
