@@ -2,13 +2,15 @@
 % There is a triangulate in the MATLAB toolbox but it does not normalize
 % the data. This function also adds the alternative to shift point correspondances to fit
 % with the fundamental matrix if it is given as the optional argument. This
-% may be neccessary if point sets other than inliers of the F estimate is used. 
+% may be neccessary when using measurements that are prone to error.
 function pts = triangulate2d( x, xp, Px, Pxp, F )
 
     % validate input
     [r,c] = size(x);
     if nargin==5
         optimal = true;
+    else
+        optimal = false;
     end
    
     if c<3% make homogeneous

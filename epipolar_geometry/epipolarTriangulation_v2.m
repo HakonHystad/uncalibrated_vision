@@ -28,6 +28,7 @@ epi.in1 = [epi.in1;sampleIx];
 epi.in2 = [epi.in2;sampleIxp];
 
 worldPts = epi.triangulate('optimal');
+% worldPts2 = epi.triangulate();
 
 %% show results
 imshow( imx );
@@ -35,14 +36,13 @@ imshow( imx );
 hold on
 
 ref = 3;
-color = worldPts(1:end-4,ref);
+dist = sqrt( sum( worldPts(1:end-4,:).^2, 2) );
+%color = worldPts(1:end-4,ref);
 % color = distributeColor( worldPts(:,ref) );
-%color = distributeColor( sqrt( sum( worldPts.^2, 2) ) );%worldPts(:,ref) );
-[maxDepth,maxIdx] = max( worldPts(:,ref) );
-[minDepth, minIdx] = min( worldPts(:,ref) );
+color = dist;
+[maxDepth,maxIdx] = max( dist );%worldPts(:,ref) );
+[minDepth, minIdx] = min( dist ); %worldPts(:,ref) );
 fprintf('Depth span: %.2f\n', maxDepth-minDepth );
-
-% color( color>mean( color ) ) = mean(color);
 
 % mark extremes in depths
 distTxt = sprintf('(%.2f,%.2f,%.2f)', worldPts(minIdx,1),worldPts(minIdx,2),worldPts(minIdx,3));
@@ -60,6 +60,7 @@ plot( epi.in1(maxIdx,1), epi.in1(maxIdx,2), 'ys','MarkerSize',10 );
 % plot inliers with depth gradient on top of image
 scatter( epi.in1(1:end-4,1), epi.in1(1:end-4,2), [], color,'filled');%worldPts(:,3),'filled' ); 
 
+
 c = [   1   1   0;...
             1   0   1;...
             0   1   1;...
@@ -70,6 +71,8 @@ hold off
 % make a 3d plot of triangulated positions
 figure, scatter3( worldPts(1:end-4,1), worldPts(1:end-4,2), worldPts(1:end-4,3), 15, color,'filled');% worldPts(:,3),'filled');
 hold on
+% scatter3( worldPts2(:,1), worldPts2(:,2), worldPts2(:,3), 15, 'ro','filled');
+% mark corners
 scatter3( worldPts(end-3:end,1), worldPts(end-3:end,2), worldPts(end-3:end,3), 30,c,'+');
 xlabel('x');
 ylabel('y');
