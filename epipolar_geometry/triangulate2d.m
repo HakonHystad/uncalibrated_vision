@@ -7,20 +7,23 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
 
     % validate input
     [r,c] = size(x);
-    if nargin==5
-        optimal = true;
-    else
-        optimal = false;
-    end
-   
+    
     if c<3% make homogeneous
         x = [x,ones(r,1)];
         xp = [xp,ones(r,1)];
     end
     
+    if nargin==5
+        for i=1:r
+%             xp(i,:)*F*x(i,:)'
+            [x(i,:), xp(i,:)] = correctedCorrespondance(x(i,:),xp(i,:),F);
+%             xp(i,:)*F*x(i,:)' 
+        end
+    end
+    
 
     % normalize
-    if r<2
+    if r>1
         [ x, Tx ] = normalize( x );
         [ xp, Txp ] = normalize( xp );
     else
@@ -34,12 +37,6 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
     pts = zeros( r, 3 );
     
     for i=1:r
-        
-        if optimal
-%             xp(i,:)*F*x(i,:)'
-            [x(i,:), xp(i,:)] = correctedCorrespondance(x(i,1:2),xp(i,1:2),F);
-%             xp(i,:)*F*x(i,:)'
-        end
         
         A = [   x(i,1)*Px(3,:)-Px(1,:);...
                 x(i,2)*Px(3,:)-Px(2,:);...
@@ -66,11 +63,11 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     Tpinv = inv(Tp);
     
     
-    F = Tpinv'*F*Tinv;% new corresponding F
-%     F = Tp'\F/T;
+%     F = Tpinv'*F*Tinv;% new corresponding F
+    F = Tp'\F/T;
     % compute new normlized epipoles
-    e = null(F); e = e./norm(e);
-    ep = null(F'); ep = ep./norm(ep);
+    e = null(F); e = e./e(end); e = e./norm( e(1:2) );
+    ep = null(F'); ep = ep./ep(end); ep = ep./norm( ep(1:2) );
     
     %% rotate by epipoles
     R = [   e(1)    e(2)    0;...
@@ -108,10 +105,10 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     xp = [-lp(1)*lp(3), -lp(2)*lp(3), lp(1)^2+lp(2)^2 ];
     
     %% transfer the points to original basis
-    x = ( Tinv*R'*x' )';
-    xp =( Tpinv*Rp'*xp' )';
-%     x = (T\R'*x')';
-%     xp = (T\Rp'*xp')';
+%     x = ( Tinv*R'*x' )';
+%     xp =( Tpinv*Rp'*xp' )';
+    x = (T\R'*x')';
+    xp = (T\Rp'*xp')';
     x = x./x(end);
     xp = xp./xp(end);
     

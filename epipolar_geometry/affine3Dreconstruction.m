@@ -51,11 +51,18 @@ v3 = cross( L5,L6 ); v3 = v3./v3(end);
 
 sampleIxp = [ sampleIxp, ones( length(sampleIxp), 1) ];
 L1 = cross( sampleIxp(1,1:3)', sampleIxp(2,1:3)' );
-L2 = cross( sampleIxp(3,1:3)', sampleIxp(2,1:3)' );
+L2 = cross( sampleIxp(2,1:3)', sampleIxp(3,1:3)' );
+L3 = cross( sampleIxp(3,1:3)', sampleIxp(4,1:3)' );
+L4 = cross( sampleIxp(4,1:3)', sampleIxp(1,1:3)' );
 L5 = cross( sampleIxp(5,1:3)', sampleIxp(8,1:3)' );
-v1p = cross( L1, epi.F*v1 ); v1p = v1p./v1p(end);
-v2p = cross( L2, epi.F*v2 ); v2p = v2p./v2p(end);
-v3p = cross( L5, epi.F*v3 ); v3p = v3p./v3p(end);
+L6 = cross( sampleIxp(6,1:3)', sampleIxp(7,1:3)' );
+% 
+% v1p = cross( L1, epi.F*v1 ); v1p = v1p./v1p(end);
+% v2p = cross( L2, epi.F*v2 ); v2p = v2p./v2p(end);
+% v3p = cross( L5, epi.F*v3 ); v3p = v3p./v3p(end);
+v1p = cross( L1, L3 ); v1p = v1p./v1p(end);
+v2p = cross( L2, L4 ); v2p = v2p./v2p(end);
+v3p = cross( L5, L6 ); v3p = v3p./v3p(end);
 
 %% triangulate
 
@@ -105,7 +112,8 @@ H = [   eye(3), [0;0;0];...
         plane' ];
     
 worldPts = ( H*worldPts' )';
-worldPts = worldPts(1:len,1:3)./[ worldPts(1:len,4), worldPts(1:len,4), worldPts(1:len,4) ];
+worldPts = worldPts(1:len,:)./repmat( worldPts(1:len,4),1,4 );
+
 % affine reconstructed
 subplot(2,2,4);
 scatter3( worldPts(1:len,1), worldPts(1:len,2), worldPts(1:len,3), 30,color,'o','filled','MarkerEdgeColor','r');
