@@ -144,8 +144,12 @@ classdef Epipolar < handle
         end% plotInlierFeatures
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function worldPts = triangulate( obj )
-            worldPts = triangulate2d(obj.in1, obj.in2,obj.P1,obj.P2); 
+        function worldPts = triangulate( obj, optimal )
+            if nargin==2 && strcmp(optimal,'optimal')
+                worldPts = triangulate2d(obj.in1, obj.in2,obj.P1,obj.P2,obj.F);
+            else
+                worldPts = triangulate2d(obj.in1, obj.in2,obj.P1,obj.P2); 
+            end
             obj.worldPts = worldPts;
         end
 
