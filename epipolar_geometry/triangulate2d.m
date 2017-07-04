@@ -16,8 +16,17 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
     if nargin==5
         for i=1:r
 %             xp(i,:)*F*x(i,:)'
+            
+%                 fprintf('Index: %.2f\n',i);
+%                 fprintf('x: (%.2f, %.2f, %.2f), xp: (%.2f, %.2f, %.2f)\n',...
+%                         x(i,1),x(i,2),x(i,3),xp(i,1),xp(i,2),xp(i,3));
+%             
             [x(i,:), xp(i,:)] = correctedCorrespondance(x(i,:),xp(i,:),F);
 %             xp(i,:)*F*x(i,:)' 
+%              
+%                 fprintf('x: (%.2f, %.2f, %.2f), xp: (%.2f, %.2f, %.2f)\n',...
+%                         x(i,1),x(i,2),x(i,3),xp(i,1),xp(i,2),xp(i,3));
+            
         end
     end
     
@@ -58,25 +67,24 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     %% translate to origin
     T = eye(3); T(1,3)=-initialx(1); T(2,3)=-initialx(2);
     Tp = eye(3); Tp(1,3)=-initialxp(1); Tp(2,3)=-initialxp(2);
-    
+%     
     Tinv = inv(T);
     Tpinv = inv(Tp);
     
-    
-%     F = Tpinv'*F*Tinv;% new corresponding F
-    F = Tp'\F/T;
+    F = Tpinv'*F*Tinv;% new corresponding F
+%     F = Tp'\F/T;
     % compute new normlized epipoles
-    e = null(F); e = e./e(end); e = e./norm( e(1:2) );
-    ep = null(F'); ep = ep./ep(end); ep = ep./norm( ep(1:2) );
+    e = null(F); e = e./norm( e(1:2) ); 
+    ep = null(F'); ep = ep./norm( ep(1:2) );
     
     %% rotate by epipoles
     R = [   e(1)    e(2)    0;...
             -e(2)   e(1)    0;...
             0       0       1];
-    Rp = [   ep(1)   ep(2)    0;...
-            -ep(2)   ep(1)    0;...
+    Rp = [   ep(1)   ep(2)  0;...
+            -ep(2)   ep(1)  0;...
             0       0       1];
-    
+        
     F = Rp*F*R';
     
     %% solve polynomial related to sum of total squared distance to epipolar line
@@ -105,10 +113,10 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     xp = [-lp(1)*lp(3), -lp(2)*lp(3), lp(1)^2+lp(2)^2 ];
     
     %% transfer the points to original basis
-%     x = ( Tinv*R'*x' )';
-%     xp =( Tpinv*Rp'*xp' )';
-    x = (T\R'*x')';
-    xp = (T\Rp'*xp')';
+    x = ( Tinv*R'*x' )';
+    xp =( Tpinv*Rp'*xp' )';
+%     x = (T\R'*x')';
+%     xp = (T\Rp'*xp')';
     x = x./x(end);
     xp = xp./xp(end);
     

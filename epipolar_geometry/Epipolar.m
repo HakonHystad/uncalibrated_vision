@@ -83,7 +83,8 @@ classdef Epipolar < handle
                 % Let camera 1 be origio and camera 2 be a Canonical
                 % decomposition, Hartley/Zisserman p.256
                 obj.P1 = [eye(3),[  0   0   1   ]'];
-                obj.P2 = [ Skew(obj.eP2)*obj.F, obj.eP2];
+                eP2 = obj.eP2./norm( obj.eP2 );
+                obj.P2 = [ Skew(eP2)*obj.F, eP2];
             end
 
         end% Epipolar constructor
