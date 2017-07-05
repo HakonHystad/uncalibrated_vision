@@ -57,7 +57,7 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
         
         pts(i,:) = pt(1:3);
     end
-    
+  
 end% triangulate2d
 
 % noisy points have to be put on the epipolar lines, H/Z algorithm 12.1,
@@ -68,13 +68,20 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     T = eye(3); T(1,3)=-initialx(1); T(2,3)=-initialx(2);
     Tp = eye(3); Tp(1,3)=-initialxp(1); Tp(2,3)=-initialxp(2);
 %     
-    Tinv = inv(T);
-    Tpinv = inv(Tp);
+    %Tinv = inv(T);
+    %Tpinv = inv(Tp);
+    Tinv = T; Tinv(1,3) = -Tinv(1,3); Tinv(2,3) = -Tinv(2,3);
+    Tpinv = T; Tpinv(1,3) = -Tpinv(1,3); Tpinv(2,3) = -Tpinv(2,3);
     
     F = Tpinv'*F*Tinv;% new corresponding F
 %     F = Tp'\F/T;
     % compute new normlized epipoles
-    e = null(F); e = e./norm( e(1:2) ); 
+    e = null(F);
+    
+    if isempty(e)
+        error('Bad fundamental matrix, try a better estimate/image\n');
+    end
+    e = e./norm( e(1:2) );
     ep = null(F'); ep = ep./norm( ep(1:2) );
     
     %% rotate by epipoles

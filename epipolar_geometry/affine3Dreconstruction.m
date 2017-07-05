@@ -3,11 +3,13 @@
 clear all
 close all
 
+alt = true;
+
 sampleIx =[...
     0.6405    0.6564;...
     1.2255    0.5709;...
     1.7160    0.7434;...
-    0.9487    0.9324;...
+    0.9480    0.9294;...
     0.9292    0.5424;...
     0.9232    0.1336;...
     1.2308    0.1306;...
@@ -18,7 +20,7 @@ sampleIxp =[...
     0.7695    0.6084;...
     1.3775    0.6439;...
     1.4150    0.8890;...
-    0.4697    0.8244;...
+    0.4735    0.8214;...
     1.1947    0.5754;...
     1.2082    0.1831;...
     1.4730    0.1771;...
@@ -36,11 +38,14 @@ epi = Epipolar(imx,imxp);
 %% find vanishing points
 sampleIx = [ sampleIx, ones( length(sampleIx), 1) ];
 % make lines
-L1 = cross( sampleIx(1,:)', sampleIx(2,:)' );
-% L1 = cross( sampleIx(5,:)', sampleIx(6,:)' );
+if ~alt
+    L1 = cross( sampleIx(1,:)', sampleIx(2,:)' );
+    L3 = cross( sampleIx(3,:)', sampleIx(4,:)' );
+else
+    L1 = cross( sampleIx(5,:)', sampleIx(6,:)' );
+    L3 = cross( sampleIx(7,:)', sampleIx(8,:)' );
+end
 L2 = cross( sampleIx(2,:)', sampleIx(3,:)' );
-L3 = cross( sampleIx(3,:)', sampleIx(4,:)' );
-% L3 = cross( sampleIx(7,:)', sampleIx(8,:)' );
 L4 = cross( sampleIx(4,:)', sampleIx(1,:)' );
 L5 = cross( sampleIx(5,:)', sampleIx(8,:)' );
 L6 = cross( sampleIx(6,:)', sampleIx(7,:)' );
@@ -52,10 +57,15 @@ v3 = cross( L5,L6 ); v3 = v3./v3(end);
 % find the vanishing points in image 2
 
 sampleIxp = [ sampleIxp, ones( length(sampleIxp), 1) ];
-L1p = cross( sampleIxp(1,:)', sampleIxp(2,:)' );
-% L1p = cross( sampleIxp(5,:)', sampleIxp(6,:)' );
+if ~alt
+    L1p = cross( sampleIxp(1,:)', sampleIxp(2,:)' );
+    % L3p = cross( sampleIxp(3,:)', sampleIxp(4,:)' );
+
+else
+    L1p = cross( sampleIxp(5,:)', sampleIxp(6,:)' );
+    % L3p = cross( sampleIxp(7,:)', sampleIxp(8,:)' );
+end
 L2p = cross( sampleIxp(2,:)', sampleIxp(3,:)' );
-% L3p = cross( sampleIxp(3,:)', sampleIxp(4,:)' );
 % L4p = cross( sampleIxp(4,:)', sampleIxp(1,:)' );
 L5p = cross( sampleIxp(5,:)', sampleIxp(8,:)' );
 % L6p = cross( sampleIxp(6,:)', sampleIxp(7,:)' );
@@ -76,6 +86,7 @@ epi.in2 = [sampleIxp;v1p';v2p';v3p'];
 worldPts = epi.triangulate('optimal');
 
 worldPts = [ worldPts, ones( length(worldPts),1) ];% make homogeneous
+
 
 len = length( worldPts ) - 3;
 subplot(2,2,[1 2]);
@@ -100,15 +111,18 @@ subplot(2,2,3);
 scatter3( worldPts(1:len,1), worldPts(1:len,2), worldPts(1:len,3), 30,color,'o','filled','MarkerEdgeColor','r');
 hold on
 % vanishing points
-scatter3( worldPts(end-2:end,1), worldPts(end-2:end,2), worldPts(end-2:end,3),'r+');
-plot3( [worldPts(4,1);worldPts(end-2,1);worldPts(1,1)], [worldPts(4,2);worldPts(end-2,2);worldPts(1,2)],...
-        [worldPts(4,3);worldPts(end-2,3);worldPts(1,3)],'--' );
-% plot3( [worldPts(6,1);worldPts(end-2,1);worldPts(7,1)], [worldPts(6,2);worldPts(end-2,2);worldPts(7,2)],...
-%         [worldPts(6,3);worldPts(end-2,3);worldPts(7,3)],'--' );
-plot3( [worldPts(2,1);worldPts(end-1,1);worldPts(1,1)], [worldPts(2,2);worldPts(end-1,2);worldPts(1,2)],...
-        [worldPts(2,3);worldPts(end-1,3);worldPts(1,3)],'--' );
-plot3( [worldPts(5,1);worldPts(end,1);worldPts(6,1)], [worldPts(5,2);worldPts(end,2);worldPts(6,2)],...
-        [worldPts(5,3);worldPts(end,3);worldPts(6,3)],'--' );
+% scatter3( worldPts(end-2:end,1), worldPts(end-2:end,2), worldPts(end-2:end,3),'r+');
+% if ~alt
+%     plot3( [worldPts(4,1);worldPts(end-2,1);worldPts(1,1)], [worldPts(4,2);worldPts(end-2,2);worldPts(1,2)],...
+%             [worldPts(4,3);worldPts(end-2,3);worldPts(1,3)],'--' );
+% else
+%     plot3( [worldPts(6,1);worldPts(end-2,1);worldPts(7,1)], [worldPts(6,2);worldPts(end-2,2);worldPts(7,2)],...
+%             [worldPts(6,3);worldPts(end-2,3);worldPts(7,3)],'--' );
+% end
+% plot3( [worldPts(2,1);worldPts(end-1,1);worldPts(1,1)], [worldPts(2,2);worldPts(end-1,2);worldPts(1,2)],...
+%         [worldPts(2,3);worldPts(end-1,3);worldPts(1,3)],'--' );
+% plot3( [worldPts(5,1);worldPts(end,1);worldPts(6,1)], [worldPts(5,2);worldPts(end,2);worldPts(6,2)],...
+%         [worldPts(5,3);worldPts(end,3);worldPts(6,3)],'--' );
 
 % rectangles
 plot3( [worldPts(1:4,1);worldPts(1,1)],[worldPts(1:4,2);worldPts(1,2)],[worldPts(1:4,3);worldPts(1,3)],...
