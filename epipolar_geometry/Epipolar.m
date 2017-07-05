@@ -152,7 +152,26 @@ classdef Epipolar < handle
                 worldPts = triangulate2d(obj.in1, obj.in2,obj.P1,obj.P2); 
             end
             obj.worldPts = worldPts;
-        end
+        end% triangulate
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function worldPts = triangulateAffine( obj, v1,v2 )
+            % find the infinite homography
+            A = Skew( obj.eP2 )*obj.F;
+            b = zeros( 3,1 );
+            for i=1:3
+                b(i) = cross( v2(i,:)', A*v1(i,:)' )'*cross( v2(i,:)', obj.eP2 );
+                b(i) = b(i)/norm( cross(v2(i,:)',obj.eP2 ) )^2;
+            end
+            M = [ v1(1,:);v1(2,:);v1(3,:) ];
+            
+            H = A-obj.eP2*( M\b )';% 13.6 H/Z, p.331
+            
+            obj.P2(1:3,1:3) = H;% H/Z, p339
+            
+            worldPts = obj.triangulate('optimal');
+            
+        end% triangulateAffine
 
         
     end% methods

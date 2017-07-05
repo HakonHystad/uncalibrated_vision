@@ -23,7 +23,7 @@ function pts = triangulate2d( x, xp, Px, Pxp, F )
 %             
             [x(i,:), xp(i,:)] = correctedCorrespondance(x(i,:),xp(i,:),F);
 %             xp(i,:)*F*x(i,:)' 
-%              
+             
 %                 fprintf('x: (%.2f, %.2f, %.2f), xp: (%.2f, %.2f, %.2f)\n',...
 %                         x(i,1),x(i,2),x(i,3),xp(i,1),xp(i,2),xp(i,3));
             
@@ -65,16 +65,11 @@ end% triangulate2d
 function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
 
     %% translate to origin
-    T = eye(3); T(1,3)=-initialx(1); T(2,3)=-initialx(2);
-    Tp = eye(3); Tp(1,3)=-initialxp(1); Tp(2,3)=-initialxp(2);
-%     
-    %Tinv = inv(T);
-    %Tpinv = inv(Tp);
-    Tinv = T; Tinv(1,3) = -Tinv(1,3); Tinv(2,3) = -Tinv(2,3);
-    Tpinv = T; Tpinv(1,3) = -Tpinv(1,3); Tpinv(2,3) = -Tpinv(2,3);
-    
+    Tinv = eye(3); Tinv(1,3)=initialx(1); Tinv(2,3)=initialx(2);
+    Tpinv = eye(3); Tpinv(1,3)=initialxp(1); Tpinv(2,3)=initialxp(2);
+
     F = Tpinv'*F*Tinv;% new corresponding F
-%     F = Tp'\F/T;
+
     % compute new normlized epipoles
     e = null(F);
     
@@ -122,8 +117,7 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
     %% transfer the points to original basis
     x = ( Tinv*R'*x' )';
     xp =( Tpinv*Rp'*xp' )';
-%     x = (T\R'*x')';
-%     xp = (T\Rp'*xp')';
+
     x = x./x(end);
     xp = xp./xp(end);
     

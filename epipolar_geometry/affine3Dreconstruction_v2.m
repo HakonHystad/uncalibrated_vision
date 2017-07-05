@@ -4,32 +4,34 @@ clear all
 close all
 
 %% config
-showVanishingPts = true;
+showVanishingPts = false;
+showSq = [true true true];
 
 %% control points (hand picked)
 
 cp1 = [...
-        0.7775    0.3771;...
-        1.1772    0.5064;...
-        1.1707    0.7191;...
-        0.7940    0.5679;...
-        1.0710    0.1254;...
-        1.2060    0.1479;...
-        1.0267    0.2146;...
-        0.8842    0.1831]*1000;
-cp2 = [...
-        0.7105    0.5779;...
-        1.3027    0.6234;...
-        1.2902    0.8516;...
-        0.7297    0.8009;...
-        0.9615    0.2439;...
-        1.1407    0.2484;...
-        1.1002    0.3444;...
-        0.8902    0.3369]*1000;
+        0.9170    0.3084;...
+        1.3005    0.0966;...
+        %1.2730    0.6676;...
+        1.2804    0.6716;...% test
+        0.9711    1.0655;...
+        0.4642    0.8986;...
+        0.3142    0.2356;...
+        0.8440    0.0716]*1000;
+cp2 = [...  
+        0.6310    0.2986;...
+        1.1399    0.0868;...
+        %1.1375    0.6524;...
+        1.1480    0.6551;...%test
+        0.7470    1.0344;...
+        0.3067    0.8557;...
+        0.1247    0.2220;...
+        0.7157    0.0561]*1000;
+
 
 %% load images
-im1 = imread('images/block1.png');
-im2 = imread('images/block2.png');
+im1 = imread('images/drawer1.png');
+im2 = imread('images/drawer2.png');
 
 
 %% estimate the fundamental matrix and triangulate
@@ -41,26 +43,28 @@ cp2 = [ cp2, ones(length(cp2),1) ];
 
 % parallel lines im1
 L1 = cross( cp1(1,:)',cp1(2,:)' );
-L3 = cross( cp1(3,:)',cp1(4,:)' );
-L2 = cross( cp1(2,:)',cp1(3,:)' );
-L4 = cross( cp1(4,:)',cp1(1,:)' );
-L5 = cross( cp1(8,:)',cp1(5,:)' );
-L6 = cross( cp1(6,:)',cp1(7,:)' );
+L2 = cross( cp1(6,:)',cp1(7,:)' );
+L3 = cross( cp1(1,:)',cp1(4,:)' );
+L4 = cross( cp1(5,:)',cp1(6,:)' );
+L5 = cross( cp1(5,:)',cp1(4,:)' );
+L6 = cross( cp1(1,:)',cp1(6,:)' );
 % vanishing points im1
 v1 = zeros(3,3);
-v1(1,:) = ( cross( L1,L3 ) )'; v1(1,:) = v1(1,:)./v1(1,3);
-v1(2,:) = ( cross( L2,L4 ) )'; v1(2,:) = v1(2,:)./v1(2,3);
+v1(1,:) = ( cross( L1,L2 ) )'; v1(1,:) = v1(1,:)./v1(1,3);
+v1(2,:) = ( cross( L3,L4 ) )'; v1(2,:) = v1(2,:)./v1(2,3);
 v1(3,:) = ( cross( L5,L6 ) )'; v1(3,:) = v1(3,:)./v1(3,3);
 
 % parallel lines im2
-L1 = cross( cp2(1,:)',cp2(2,:)' );
-L2 = cross( cp2(2,:)',cp2(3,:)' );
-L5 = cross( cp2(8,:)',cp2(5,:)' );
+L2 = cross( cp2(6,:)',cp2(7,:)' );
+L4 = cross( cp2(5,:)',cp2(6,:)' );
+L5 = cross( cp2(4,:)',cp2(5,:)' );
 % vanishing points im2 compatible with the epipolar line from v1
 v2 = zeros(3,3);
-v2(1,:) = ( cross( L1,epi.F*v1(1,:)' ) )'; v2(1,:) = v2(1,:)./v2(1,3);
-v2(2,:) = ( cross( L2,epi.F*v1(2,:)' ) )'; v2(2,:) = v2(2,:)./v2(2,3);
+v2(1,:) = ( cross( L2,epi.F*v1(1,:)' ) )'; v2(1,:) = v2(1,:)./v2(1,3);
+v2(2,:) = ( cross( L4,epi.F*v1(2,:)' ) )'; v2(2,:) = v2(2,:)./v2(2,3);
 v2(3,:) = ( cross( L5,epi.F*v1(3,:)' ) )'; v2(3,:) = v2(3,:)./v2(3,3);
+
+
 
 %% triangulate
 epi.in1 = [ cp1;v1 ];
@@ -81,47 +85,63 @@ color = [   1   1   0;...
             1   1   1;...
             0   0   0];
         
-subplot(2,2,[1 2]);
+figure,subplot(2,2,[1 2]);
 imshow(im1);
 hold on
-plot2DShape( cp1(1:4,1:2), color(1:4,:) );
-plot2DShape( cp1(5:8,1:2), color(5:8,:) );
+sq1 = [ 1,2,3,4 ];
+sq2 = [ 1,6,7,2 ];
+sq3 = [ 1,4,5,6 ];
+if showSq(1)
+    plot2DShape( cp1(sq1,1:2), color(sq1,:) );
+end
+if showSq(2)
+    plot2DShape( cp1(sq2,1:2), color(sq2,:) );
+end
+if showSq(3)
+    plot2DShape( cp1(sq3,1:2), color(sq3,:) );
+end
 hold off
 
 %% show projective reconstruction (triangulation)
 subplot(2,2,3);
 hold on
-plot3DShape( worldPts(1:4,1:3), color(1:4,:) ); 
-plot3DShape( worldPts(5:8,1:3), color(5:8,:) );
+if showSq(1)
+    plot3DShape( worldPts(sq1,1:3), color(sq1,:) );
+end
+if showSq(2)
+    plot3DShape( worldPts(sq2,1:3), color(sq2,:) );
+end
+if showSq(3)
+    plot3DShape( worldPts(sq3,1:3), color(sq3,:) );
+end
+
 
 if showVanishingPts
-    plotVanishingPt( worldPts(9,:), [worldPts(1,1:3);worldPts(4,1:3)], 'r+' );% 1
-    plotVanishingPt( worldPts(10,:), [worldPts(3,1:3);worldPts(4,1:3)], 'g+' );% 2
-    plotVanishingPt( worldPts(11,:), [worldPts(5,1:3);worldPts(6,1:3)], 'b+' );% 3
+    if showSq(2)
+        plotVanishingPt( worldPts(end-2,:), [worldPts(2,1:3);worldPts(7,1:3)], 'r+' );% 1
+    end
+    if showSq(3)
+        plotVanishingPt( worldPts(end-1,:), [worldPts(1,1:3);worldPts(6,1:3)], 'g+' );% 2
+        plotVanishingPt( worldPts(end,:), [worldPts(5,1:3);worldPts(6,1:3)], 'b+' );% 3
+    end
 end
 hold off
 
 %% Reconstruct Affine properties
-v_1 = worldPts(end-2,1:3)';
-v_2 = worldPts(end-1,1:3)';
-v_3 = worldPts(end,1:3)';
-
-plane = [   cross(v_1-v_3,v_2-v_3);...
-            -v_3'*cross(v_1,v_2)   ]; plane = plane./plane(end);
-
-% reconstructing homography
-H = [   eye(3), [0;0;0];...
-        plane' ];
-
-worldPts = ( H*worldPts' )';
-
-worldPts = worldPts(1:end-3,:)./repmat( worldPts(1:end-3,4),1,4 );% non-homogeneous
+worldPts = epi.triangulateAffine( v1, v2 );
 
 %% show reconstructed results
 subplot(2,2,4);
 hold on
-plot3DShape( worldPts(1:4,1:3), color(1:4,:) ); 
-plot3DShape( worldPts(5:8,1:3), color(5:8,:) );
+if showSq(1)
+    plot3DShape( worldPts(sq1,1:3), color(sq1,:) ); 
+end
+if showSq(2)
+    plot3DShape( worldPts(sq2,1:3), color(sq2,:) );
+end
+if showSq(3)
+    plot3DShape( worldPts(sq3,1:3), color(sq3,:) );
+end
 hold off
 
 
