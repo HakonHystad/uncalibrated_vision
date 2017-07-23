@@ -6,6 +6,9 @@
 % plotEpiLine(option, n)		- Plots n epipolar line of image <1 or 2>
 % plotEpiPole(option)		- Plots the epipole of image <1 or 2>
 % plotInlierFeatures(option, n)	- Plots n inliers of image <1 or 2> 
+% triangulate( optimal )    - triagulate for a projective reconstruction,
+% optional 'optimal' arg for better accuracy (computationally expensive)
+% triangulateAffine( v1,v2 ) - does a affine 3D reconstruction based on 3 point correspndances at infinity. 
 % 
 % 
 % %%%%%%%%%%%%%%%%%%PROPERTIES%%%%%%%%%%%%%%%%%%%%%%
@@ -167,9 +170,11 @@ classdef Epipolar < handle
             
             H = A-obj.eP2*( M\b )';% 13.6 H/Z, p.331
             
+            tmp = obj.P2(1:3,1:3);
             obj.P2(1:3,1:3) = H;% H/Z, p339
             
             worldPts = obj.triangulate('optimal');
+            obj.P2(1:3,1:3) = tmp;
             
         end% triangulateAffine
 
