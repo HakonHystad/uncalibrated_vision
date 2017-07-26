@@ -12,26 +12,17 @@ len = length( epi.in1 );
 in1 = [ epi.in1(:,1:2), ones(len, 1) ];
 in2 = [ epi.in2(:,1:2), ones(len, 1) ];
 
-for i=1:length(in1)
-    [in1(i,:),in2(i,:)] = correctedCorrespondance( in1(i,:), in2(i,:), epi.F );
-end
+% for i=1:length(in1)
+%     [in1(i,:),in2(i,:)] = correctedCorrespondance( in1(i,:), in2(i,:), epi.F );
+% end
 ind = randperm( length(in1), 4 );
 
 
 
 %% find homography   
-A = Skew( epi.eP2 )*epi.F;
-b = zeros( 3,1 );
 v1 = in1(ind,:);
 v2 = in2(ind,:);
-
-for i=1:3
-    b(i) = cross( v2(i,:)', A*v1(i,:)' )'*cross( v2(i,:)', epi.eP2 );
-    b(i) = b(i)/norm( cross(v2(i,:)',epi.eP2 ) )^2;
-end
-M = [ v1(1,:);v1(2,:);v1(3,:) ];
-
-H = A-epi.eP2*( M\b )';% 13.6 H/Z, p.331
+H = planeHomography( v1,v2, epi.F, epi.eP2 );
 
 % H = homography(v1,v2);
     
