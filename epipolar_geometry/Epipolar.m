@@ -8,7 +8,8 @@
 % plotInlierFeatures(option, n)	- Plots n inliers of image <1 or 2> 
 % triangulate( optimal )    - triagulate for a projective reconstruction,
 % optional 'optimal' arg for better accuracy (computationally expensive)
-% triangulateAffine( v1,v2 ) - does a affine 3D reconstruction based on 3 point correspndances at infinity. 
+% triangulateAffine( v1,v2 ) - does a affine 3D reconstruction based on 3 point correspndances at infinity.
+% correctInliers( obj ) - fixes inliers points to the nearest epipolar line
 % 
 % 
 % %%%%%%%%%%%%%%%%%%PROPERTIES%%%%%%%%%%%%%%%%%%%%%%
@@ -177,6 +178,16 @@ classdef Epipolar < handle
             obj.P2(1:3,1:3) = tmp;
             
         end% triangulateAffine
+        
+        function correctInliers( obj )
+            len = length( obj.in1 );
+            obj.in1 = [ obj.in1(:,1:2), ones(len, 1) ];
+            obj.in2 = [ obj.in2(:,1:2), ones(len, 1) ];
+            
+            for i=1:len
+                [obj.in1(i,:),obj.in2(i,:)] = correctedCorrespondance( obj.in1(i,:), obj.in2(i,:), obj.F );
+            end
+        end% correctInliers
 
         
     end% methods

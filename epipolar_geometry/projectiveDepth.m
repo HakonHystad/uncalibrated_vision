@@ -8,13 +8,12 @@ im2 = imread('images/table2a.jpg');
 
 % estimate fundamental matrix
 epi = Epipolar( im1, im2 );
+
+epi.correctInliers();
 len = length( epi.in1 );
 in1 = [ epi.in1(:,1:2), ones(len, 1) ];
 in2 = [ epi.in2(:,1:2), ones(len, 1) ];
 
-% for i=1:length(in1)
-%     [in1(i,:),in2(i,:)] = correctedCorrespondance( in1(i,:), in2(i,:), epi.F );
-% end
 ind = randperm( length(in1), 4 );
 
 
@@ -22,7 +21,7 @@ ind = randperm( length(in1), 4 );
 %% find homography   
 v1 = in1(ind,:);
 v2 = in2(ind,:);
-H = planeHomography( v1,v2, epi.F, epi.eP2 );
+H = plane2Homography( v1,v2, epi.F, epi.eP2 );
 
 % H = homography(v1,v2);
     
