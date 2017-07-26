@@ -2,7 +2,7 @@
 % from 3 point correspndances ( given as 2 3*3 matrices 1 point per row )
 % and the fundamental matrix. 4 arg is optinal if the epipole of image 2 is
 % pre calculated.
-function H = planeHomography( v1, v2, F, eP2 )
+function H = plane2Homography( v1, v2, F, eP2 )
 
     if nargin<4% calc epipole
         eP2 = null(F');
