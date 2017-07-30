@@ -26,6 +26,7 @@ Hp = [ [1 0 0]' -V(1:3,end) V(4:6,end) ];
 Hp = [  1           0           0;...
         -epi.F(1,3) -epi.F(2,3) -epi.F(3,3);...
         epi.F(1,2) epi.F(2,2) epi.F(3,2)];
+    
 
 [r,c,~] = size( im1 );
 
@@ -41,6 +42,7 @@ Hp = minimizeDistortion( Hp, pts, 0 );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% image 1
+figure
 subplot(1,2,1),imshow( im1p );
 yPos = get(gca,'ylim')/2;
 hold on
