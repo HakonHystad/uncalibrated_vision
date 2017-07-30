@@ -26,7 +26,7 @@ function [x,xp] = correctedCorrespondance( initialx, initialxp, F )
             0       0       1];
         
     F = Rp*F*R';
-    
+   
     %% solve polynomial related to sum of total squared distance to epipolar line
     f = e(3); fp = ep(3); a = F(2,2); b = F(2,3); c = F(3,2); d = F(3,3);
     p = minPolynomial( a,b,c,d,f,fp );

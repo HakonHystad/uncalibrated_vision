@@ -10,7 +10,6 @@
 im1 = imread('images/book1a.jpg');
 im2 = imread('images/book2a.jpg');
 
-
 eGeometry = Epipolar( im1, im2 );
 
 len = length( eGeometry.eL1 );

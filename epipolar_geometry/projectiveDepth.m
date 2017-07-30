@@ -9,7 +9,7 @@ im2 = imread('images/table2a.jpg');
 % estimate fundamental matrix
 epi = Epipolar( im1, im2 );
 
-epi.correctInliers();
+%epi.correctInliers();
 len = length( epi.in1 );
 in1 = [ epi.in1(:,1:2), ones(len, 1) ];
 in2 = [ epi.in2(:,1:2), ones(len, 1) ];
