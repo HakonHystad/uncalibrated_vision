@@ -4,7 +4,7 @@ To stitch two overlapping images together one needs to find (at least) 4 shared 
 
 To have educational value the user is free to find these 4 points in each image. If not one could also use the automatic stitching feature which will find matching points through feature extraction and do a homography fitting with RANSAC.
 
-Note that for alignment to be proper the two image sceneries must be considered planar since the homography does not account for depth. Scenery with a great distance to the camera may be approximated as a plane, otherwise the images must be taken with pure rotation around the camera center.
+Note that for alignment to be proper the two image sceneries must be considered planar since the homography maps between planes. Scenery with a great distance to the camera may be approximated as a plane, otherwise the images must be taken with pure rotation around the camera center.
 
 For more information: Corke p.431, Hartley/Zisserman p.206
 
