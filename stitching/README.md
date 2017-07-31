@@ -1,8 +1,8 @@
 # stitching
 
-To stitch two overlapping images together one needs to find (at least) 4 shared points between them and calculate the homography. Applying the homography aligns the image in such a way that it can be overlay-ed the reference image. 
+To stitch two overlapping images together one needs to find (at least) 4 shared points between them and calculate the homography. Applying the homography aligns the image in such a way that it can be overlayed the reference image. 
 
-To have educational value the user is free to find these 4 points in each image. If not one could also use the automatic stitching feature which will find matchin points through feature extraction.
+To have educational value the user is free to find these 4 points in each image. If not one could also use the automatic stitching feature which will find matching points through feature extraction and do a homography fitting with RANSAC.
 
 Note that for alignment to be proper the two image sceneries must be considered planar since the homography does not account for depth. Scenery with a great distance to the camera may be approximated as a plane, otherwise the images must be taken with pure rotation around the camera center.
 
@@ -12,7 +12,7 @@ When doing automatic stitching the corresponding points have to be found through
 
 # usage
 
-The stitching is performed through a GUI which uses a stitching class. The user may specify 4 correlating points in the two specified images and perform a stitching. More tile images can be added to the (right of the) reference if the user so pleases. If the automatic option is used SURF features are found and matched and a homography is fitted to the normalized data with RANSAC.
+The stitching is performed through a GUI which uses a stitching class. The user may specify 4 correlating points in the two specified images and perform a stitch. More tile images can be added to the (right of the) reference if the user so pleases. If the automatic option is used SURF features are found and matched and a homography is fitted to the normalized data with RANSAC.
 
 Options:
 - 'High res' will switch out (all non-zero) pixels of the warped tile image with the reference instead of adding them on top of each other. Note that this can take some time.  
