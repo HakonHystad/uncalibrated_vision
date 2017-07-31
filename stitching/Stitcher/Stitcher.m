@@ -253,9 +253,6 @@ classdef Stitcher < handle
                 obj.refIm = [ obj.refIm, expansion ];
             end
             
-                  
-            % update image size within canvas
-            obj.refSize(1:2) = [ max( obj.refSize(1),pos(1,2) ),max( obj.refSize(2),pos(2,2) )];
             
             % merge it with the preferred option
             arg = '';
@@ -266,22 +263,22 @@ classdef Stitcher < handle
             end
             
             switch( arg )
-                case 'insert'% replace the pixels if>0, NB: takes a long time
-                
-                    for i = 1:r
-                        for j = 1:c
-                            offs = [offset(2)-1+i,offset(1)-1+j ];
-                            if any( obj.tileIm(i,j,:) )% if non-black pixel->replace
-                                obj.refIm( offs(1),offs(2),:) = obj.tileIm(i,j,:);
-                            end
-                        end
-                    end
-                    
+                case 'insert'% replace the pixels if>0
+                    invalidPixels = (obj.tileIm==0);% find black pixels
+                    clip = obj.refIm(1:r,offset(1):offset(1)+c-1,:);
+                    obj.tileIm(invalidPixels) = clip( invalidPixels );% replace black with ref pixels
+                    obj.refIm( pos(1,1):pos(1,2), pos(2,1):pos(2,2),: ) = obj.tileIm;% insert
                     %%%%%%%%%%%%%%
                 otherwise% default is adding in the tile making the overlapping pixels brighter
                     obj.refIm( pos(1,1):pos(1,2), pos(2,1):pos(2,2),: ) = ...
                         obj.refIm( pos(1,1):pos(1,2), pos(2,1):pos(2,2), : ) + obj.tileIm;
             end% switch arg
+            
+            
+                  
+            % update image size within canvas
+            obj.refSize(1:2) = [ max( obj.refSize(1),pos(1,2) ),max( obj.refSize(2),pos(2,2) )];
+            
              
         end% stitch
         
