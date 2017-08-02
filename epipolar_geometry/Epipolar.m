@@ -66,11 +66,35 @@ classdef Epipolar < handle
             [obj.F,obj.in1, obj.in2] = extractF(im1,im2);
             
             % calculate epipolar lines
+            calcEpiLines(obj);
+            
+            % calculate epipoles
+            calcEpipoles(obj);
+            
+            % set/construct camera matrices
+            if nargin == 4
+                obj.P1 = P1;
+                obj.P2 = P2;
+            else
+                % Let cameras be canonical, Hartley/Zisserman p.256
+                obj.P1 = [eye(3),[  0   0   1   ]'];
+                eP2 = obj.eP2./norm( obj.eP2 );
+                obj.P2 = [ Skew(eP2)*obj.F, eP2];
+            end
+
+        end% Epipolar constructor
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function calcEpiLines( obj )
+            % calculate epipolar lines
             % of image 1 due to points in image 2
             obj.eL1 = epipolarLine( obj.F', obj.in2 );
             % of image 2 due to points in image 1
             obj.eL2 = epipolarLine( obj.F, obj.in1 );
-            
+        end% calcEpiLines
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function calcEpipoles( obj )
             % calculate epipoles
             % of image 1 due to camera center in image 2 (right nullspace)
             obj.eP1 = null(obj.F);
@@ -78,20 +102,7 @@ classdef Epipolar < handle
             % of image 2 due to camera center in image 1 (left nullspace)
             obj.eP2 = null(obj.F');
             obj.eP2 = obj.eP2./obj.eP2(3);
-            
-            % set/construct camera matrices
-            if nargin == 4
-                obj.P1 = P1;
-                obj.P2 = P2;
-            else
-                % Let camera 1 be origio and camera 2 be a Canonical
-                % decomposition, Hartley/Zisserman p.256
-                obj.P1 = [eye(3),[  0   0   1   ]'];
-                eP2 = obj.eP2./norm( obj.eP2 );
-                obj.P2 = [ Skew(eP2)*obj.F, eP2];
-            end
-
-        end% Epipolar constructor
+        end% calcEpipoles
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function plotEpiLine( obj, imOption, nr )
