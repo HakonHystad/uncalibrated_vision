@@ -22,8 +22,19 @@ hold on
 refline(0,yPos(2));
 hold off
 
-% figure,imshow(stereoAnaglyph(r.rectIm1,r.rectIm2));
+%% visualize disparity
+figure,imshow(stereoAnaglyph(r.rectIm1,r.rectIm2));
+diff = abs( r.in1(:,1) - r.in2(:,1) );
+[maxDiff,idx] = max( diff );
+hold on
+plot( r.in1(:,1),r.in1(:,2),'ro');
+plot( r.in2(:,1),r.in2(:,2),'co');
+% mark the greatest difference in x-direction
+plot( r.in1(idx,1),r.in1(idx,2),'go','MarkerFaceColor','r');
+plot( r.in2(idx,1),r.in2(idx,2),'go','MarkerFaceColor','c');
+hold off
 
+%% find disparity
 [disparityMap, disparityRange] = r.calcDisparity();
 figure,imshow( disparityMap, disparityRange );
 colormap jet

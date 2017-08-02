@@ -16,6 +16,9 @@ classdef Rectify < handle
         H1;         % rectifycation homography of image 1
         H2;         % rectifycation homography of image 2 
         
+        in1;        % transformed inliers after rectification
+        in2;        % transformed inliers after rectification
+        
         rectStatus; % bool successful rectification
         disparityMap;   % disparity map after dense stereo matching
         disparityRange; % disparity range after dense stero mathcing
@@ -27,7 +30,7 @@ classdef Rectify < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function [obj,status] = Rectify( im1, im2 )
             obj.epi = Epipolar( im1, im2 );
-            status = rectify( obj, im1, im2 );
+            status = rectify( obj, imgaussfilt(im1), imgaussfilt(im2) );
         end% Rectify constructor
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,6 +87,15 @@ classdef Rectify < handle
             if ~isempty( obj.rectIm1 ) && ~isempty( obj.rectIm2 )
                 status = true;
                 obj.rectStatus = true;
+                
+                % transform inliers
+                obj.in1 = [obj.epi.in1'; ones( 1,length(obj.epi.in1)) ];  
+                obj.in2 = [obj.epi.in2'; ones( 1,length(obj.epi.in2)) ]; 
+                obj.in1 = (obj.H1*obj.in1)';
+                obj.in1 = obj.in1./repmat( obj.in1(:,3), 1,3);
+                obj.in2 = (obj.H2*obj.in2)';
+                obj.in2 = obj.in2./repmat( obj.in2(:,3), 1,3);
+                
             end
         end% rectify
         
@@ -103,9 +115,9 @@ classdef Rectify < handle
                         
                 if noRangeGiven
                     % estimate ca disparity range from inliers
-                    diff = abs( obj.epi.in1(:,1) - obj.epi.in2(:,1) );
+                    diff = abs( obj.in1(:,1) - obj.in2(:,1) );
                     maxDiff = max( diff );
-                    
+                    maxDiff = maxDiff*1.1;
                     maxDiff = ceil(maxDiff);
                     remainder = mod(maxDiff,16);
                     maxDiff = maxDiff + (16-remainder);% make a multiple of 16
