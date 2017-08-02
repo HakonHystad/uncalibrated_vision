@@ -9,7 +9,7 @@ for i=1:100% try until good rectification (or count)
     fprintf('Rectifying, trial %d\n',i)
     [r, status] = Rectify( im1, im2 );
 
-    if status && size(r.rectIm1,2)>100
+    if status
         break;
     end
 

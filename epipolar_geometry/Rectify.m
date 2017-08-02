@@ -135,10 +135,10 @@ end% Rectify classdef
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [im1, im2] = rectifyImages( I1, I2, H1, H2 )
     % find common transformed area
-    [r,c,~] = size(I1);
-    corners1 = transformCorners( H1, r,c );
-    [r,c,~] = size(I2);
-    corners2 = transformCorners( H2, r,c );
+    [r1,c1,~] = size(I1);
+    corners1 = transformCorners( H1, r1,c1 );
+    [r2,c2,~] = size(I2);
+    corners2 = transformCorners( H2, r2,c2 );
     
     corners = [ corners1;corners2 ];
     x = sort( corners(:,1) );
@@ -152,7 +152,11 @@ function [im1, im2] = rectifyImages( I1, I2, H1, H2 )
     width = xmax-xmin;
     height = ymax-ymin;
     
-    if width<=1 || height<=1
+    % check dimension
+    wCond = mean([c1 c2])*0.1;
+    hCond = mean([r1 r2])*0.1;
+    
+    if width<wCond || height<hCond% new images will be <10% of originals
          disp('Bad rectification');
          im1 = [];
          im2 = [];
