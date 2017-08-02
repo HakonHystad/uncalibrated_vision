@@ -18,6 +18,7 @@ classdef Rectify < handle
         
         rectStatus; % bool successful rectification
         disparityMap;   % disparity map after dense stereo matching
+        disparityRange; % disparity range after dense stero mathcing
         
     end% properties
     
@@ -88,7 +89,7 @@ classdef Rectify < handle
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function [disparityMap,disparityRange] = calcDisparity(obj, varargin)
-            
+            disparityRange = [];
             if obj.rectStatus
                 % check input args
                 noRangeGiven = true;
@@ -118,6 +119,7 @@ classdef Rectify < handle
                 end% noRangeGiven
                 
                 obj.disparityMap = disparityMap;
+                obj.disparityRange = disparityRange;
             else
                 disp('Perform rectification first')
                 disparityMap = [];
