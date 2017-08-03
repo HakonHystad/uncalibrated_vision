@@ -101,6 +101,7 @@ hold off
 
 %% show projective reconstruction (triangulation)
 subplot(2,2,3);
+title('Projective reconstruction');
 hold on
 if showSq(1)
     plot3DShape( worldPts(sq1,1:3), color(sq1,:) );
@@ -128,7 +129,9 @@ hold off
 worldPts = epi.triangulateAffine( v1, v2 );
 
 %% show reconstructed results
+
 subplot(2,2,4);
+title('Affine reconstruction');
 hold on
 if showSq(1)
     plot3DShape( worldPts(sq1,1:3), color(sq1,:) ); 
