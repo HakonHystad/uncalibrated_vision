@@ -88,9 +88,9 @@ classdef Epipolar < handle
         function calcEpiLines( obj )
             % calculate epipolar lines
             % of image 1 due to points in image 2
-            obj.eL1 = epipolarLine( obj.F', obj.in2 );
+            obj.eL1 = epipolarLine( obj.F', obj.in2(:,1:2) );
             % of image 2 due to points in image 1
-            obj.eL2 = epipolarLine( obj.F, obj.in1 );
+            obj.eL2 = epipolarLine( obj.F, obj.in1(:,1:2) );
         end% calcEpiLines
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

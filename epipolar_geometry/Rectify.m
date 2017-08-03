@@ -117,7 +117,7 @@ classdef Rectify < handle
                     % estimate ca disparity range from inliers
                     diff = abs( obj.in1(:,1) - obj.in2(:,1) );
                     maxDiff = max( diff );
-                    maxDiff = maxDiff*1.1;
+                    maxDiff = maxDiff*1.05;% add 5%
                     maxDiff = ceil(maxDiff);
                     remainder = mod(maxDiff,16);
                     maxDiff = maxDiff + (16-remainder);% make a multiple of 16

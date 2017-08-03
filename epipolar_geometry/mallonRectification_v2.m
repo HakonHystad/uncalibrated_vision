@@ -1,9 +1,12 @@
 clear all
 
-im1 = imread('images/building1a.jpg');
-im2 = imread('images/building2a.jpg');
-% im1 = imread('images/lunch1.png');
-% im2 = imread('images/lunch2.png');
+% im1 = imread('images/building1a.jpg');
+% im2 = imread('images/building2a.jpg');
+im1 = imread('images/view0.png');
+im2 = imread('images/view1.png');
+% im1 = imread('images/view0a.png');
+% im2 = imread('images/view1a.png');
+
 
 for i=1:100% try until good rectification (or count)
     fprintf('Rectifying, trial %d\n',i)
@@ -32,6 +35,9 @@ plot( r.in2(:,1),r.in2(:,2),'co');
 % mark the greatest difference in x-direction
 plot( r.in1(idx,1),r.in1(idx,2),'go','MarkerFaceColor','r');
 plot( r.in2(idx,1),r.in2(idx,2),'go','MarkerFaceColor','c');
+plot(   [r.in1(idx,1), r.in2(idx,1)],...
+            [r.in1(idx,2), r.in2(idx,2)],'LineWidth',2,'Color','g' );
+
 hold off
 
 %% find disparity
@@ -39,3 +45,6 @@ hold off
 figure,imshow( disparityMap, disparityRange );
 colormap jet
 colorbar
+
+rectIm1 = r.rectIm1;
+rectIm2 = r.rectIm2;
