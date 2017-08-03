@@ -1,8 +1,5 @@
 % Affine 3D reconstruction
 
-clear all
-close all
-
 %% config
 showVanishingPts = false;
 showSq = [true true true];
