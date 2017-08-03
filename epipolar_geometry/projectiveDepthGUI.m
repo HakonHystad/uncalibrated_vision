@@ -63,9 +63,9 @@ guidata(hObject, handles);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
  % initial image
- file1 = 'table1a.jpg';
- file2 = 'table2a.jpg';
- path = './images/';
+ file1 = 'building1a.jpg';
+ file2 = 'building2a.jpg';
+ path = '';
 openButton_Callback(hObject, eventdata, handles, file1, file2, path);
 
 
@@ -133,7 +133,7 @@ function closeButton_Callback(hObject, eventdata, handles)
 % hObject    handle to closeButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    close all;
+    close(gcf);
     
 % ---
 function addPoints( hObject )

@@ -62,7 +62,6 @@ guidata(hObject, handles);
 % uiwait(handles.figure1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-addpath('./Stitcher');
 
 % make objects to use throughout gui
 handles.stitcher = Stitcher('images/book1a.jpg');

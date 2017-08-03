@@ -7,8 +7,6 @@ app = { 'Single view recovery',...
         'Rectification',...
         'Projective depth'};
         
-
-choice = '';
 while true
     choice = menu( 'Choose application',app{:}, 'Close');
      switch choice
@@ -25,8 +23,6 @@ while true
          otherwise
              break;
      end% switch
-     
-     
      
  end% while 1
      

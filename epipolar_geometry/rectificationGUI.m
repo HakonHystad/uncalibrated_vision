@@ -105,7 +105,7 @@ function closeButton_Callback(hObject, eventdata, handles)
 % hObject    handle to closeButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    close all
+    close(gcf)
 
 % --- Executes on button press in anaglyphButton.
 function anaglyphButton_Callback(hObject, eventdata, handles)
