@@ -140,7 +140,11 @@ function disparityButton_Callback(hObject, eventdata, handles)
     figure,imshow( disparityMap, disparityRange );
     colormap jet
     colorbar
-
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%TESTING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    save( 'disparityValues', 'disparityMap', 'disparityRange');
+    imwrite( handles.r.rectIm1, 'rectifiedImage1.png');
+    imwrite( handles.r.rectIm2, 'rectifiedImage2.png');
 
 %---
 function setImages( hObject, handles )
@@ -162,8 +166,8 @@ function setImages( hObject, handles )
     cla reset;
     imshow( handles.im1 );
     hold on
-    handles.r.epi.plotInlierFeatures(1,10);% plot 10 inliers in image 1
-    handles.r.epi.plotEpiLine(1,10);
+    handles.r.epi.plotInlierFeatures(1,8);% plot 8 inliers in image 1
+    handles.r.epi.plotEpiLine(1,8);
     hold off
 
     % image 2
@@ -171,8 +175,8 @@ function setImages( hObject, handles )
     cla reset;
     imshow( handles.im2 );
     hold on
-    handles.r.epi.plotInlierFeatures(2,10);% plot 10 inliers in image 2
-    handles.r.epi.plotEpiLine(2,10);
+    handles.r.epi.plotInlierFeatures(2,8);% plot 10 inliers in image 2
+    handles.r.epi.plotEpiLine(2,8);
     hold off
     
     
@@ -204,8 +208,8 @@ function setImages( hObject, handles )
     cla reset;
     imshow( handles.r.rectIm1 );
     hold on
-    handles.r.epi.plotInlierFeatures(1,10);% plot 10 inliers in image 1
-    handles.r.epi.plotEpiLine(1,10);
+    handles.r.epi.plotInlierFeatures(1,8);% plot 8 inliers in image 1
+    handles.r.epi.plotEpiLine(1,8);
     hold off
 
     % image 2
@@ -213,8 +217,8 @@ function setImages( hObject, handles )
     cla reset;
     imshow( handles.r.rectIm2 );
     hold on
-    handles.r.epi.plotInlierFeatures(2,10);% plot 10 inliers in image 2
-    handles.r.epi.plotEpiLine(2,10);
+    handles.r.epi.plotInlierFeatures(2,8);% plot 10 inliers in image 2
+    handles.r.epi.plotEpiLine(2,8);
     hold off
     
     % Update handles structure
