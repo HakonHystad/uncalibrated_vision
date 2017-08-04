@@ -112,9 +112,9 @@ function openButton_Callback(hObject, eventdata, handles, varargin)
         imshow( im1 );
         drawnow
         
-        h = msgbox('Please wait..');
-        handles.epi.correctInliers();
-        delete(h);
+%         h = msgbox('Please wait..');
+%         handles.epi.correctInliers();
+%         delete(h);
         % Update handles structure
         guidata(hObject, handles);
         
