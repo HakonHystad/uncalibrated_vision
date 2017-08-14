@@ -187,10 +187,15 @@ classdef Stitcher < handle
             % calc homography, offset is foud with respect to ref ([1,1])
             [r, c, ~] = size( obj.tileIm );
             if length(obj.refPts)>4% do inlier detection
-                [H,offset, inliersOut] = homography(    obj.refPts, obj.tilePts, [r,c], 'ransac',...
-                                            'threshold',0.1, 'iterations',100000,...
+                [H, inliersOut] = homography(    obj.refPts, obj.tilePts, 'ransac',...
+                                            'threshold',0.1, 'iterations',10000,...
                                             'samplesize',4);
-                %inliersOut = length(inliersOut)/length(obj.refPts);% for testing
+                box = boundingBox( H, [r c] );
+                % find the offset
+                xmin = min( box(:,1) );
+                ymin = min( box(:,2) );
+
+                offset = floor( [ xmin, ymin] );
                 
                 % reset tile and ref points
                 obj.tilePts = ones(4,3);
@@ -201,7 +206,7 @@ classdef Stitcher < handle
             
             if  (   any(isnan( H(:) ))...
                     || any( abs(offset)>[maxImSize(),maxImSize()] )...
-                    || isequal(H,eye(3)) )
+                    || isempty(H) )
                 warning('ERROR @ stitch(): No valid homography');
                 status = false;
                 return;
