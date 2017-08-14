@@ -21,7 +21,6 @@ function [H,inliers] = homography(s,p,varargin)
         
     if ~isempty( varargin ) && strcmpi( varargin{1}, 'ransac' )
         [H,inliers] = ransac( @calcHomography, @homographyDistance, s, p, varargin{2:end} );
-        disp('RANSAC')
     else
         H = calcHomography(s,p);
         inliers = [];
