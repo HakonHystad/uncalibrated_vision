@@ -142,7 +142,8 @@ function disparityButton_Callback(hObject, eventdata, handles)
     colorbar
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%TESTING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    save( 'disparityValues', 'disparityMap', 'disparityRange');
+    F = handles.r.epi.F;
+    save( 'disparityValues', 'disparityMap', 'disparityRange','F' );
     imwrite( handles.r.rectIm1, 'rectifiedImage1.png');
     imwrite( handles.r.rectIm2, 'rectifiedImage2.png');
 

@@ -9,9 +9,12 @@ im2 = rgb2gray( im2 );
 im1 = imgaussfilt( im1, 1 );
 im2 = imgaussfilt( im2, 1 );
 
-%% detect corresponding features
+% %% detect corresponding features
 pt1 = detectSURFFeatures( im1 );
 pt2 = detectSURFFeatures( im2 );
+
+% pt1 = detectHarrisFeatures( im1 );
+% pt2 = detectHarrisFeatures( im2 );
 
 [ft1, validPt1] = extractFeatures( im1, pt1 );
 [ft2, validPt2] = extractFeatures( im2, pt2 );
