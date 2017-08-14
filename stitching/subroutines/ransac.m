@@ -5,7 +5,7 @@
 % - 'iterations': max number of iterations performed, default=2000
 % - 'samplesize': nr of samples to be used for each iteration, default=4
 
-function [M,inliersOut] = ransac( model, distance, s, p, varargin )
+function [M,inliersOut] = ransac( model, distance, data, varargin )
 
     M = [];
     inliersOut = [];
@@ -28,9 +28,9 @@ function [M,inliersOut] = ransac( model, distance, s, p, varargin )
     end% for i 
     
     
-    len = length( s );
-    spts = ones( ssz, 3 );
-    ppts = spts;
+    len = length( data{1} );
+    dataLen = length( data );
+    sample = cell( dataLen,1 ); 
     nmaxInlier = ssz;
     
     pInlierSample = 0.99;% probability that at least 1 sample is free from outliers
@@ -43,19 +43,20 @@ function [M,inliersOut] = ransac( model, distance, s, p, varargin )
         
         %% get a random sample of ssize points
         sIndex = randperm( len, ssz );
-        % s
-        spts(:,1:2) = s( sIndex, 1:2 );
-        ppts(:,1:2) = p( sIndex, 1:2 );
+        
+        for j=1:dataLen
+            sample{j} = data{j}(sIndex,:);
+        end% for j
         
         %% compute a trial model
-        Mtest = feval( model, spts, ppts );
+        Mtest = feval( model, sample );
         
         if isempty( Mtest )% not valid
             continue;
         end
         
         %% test trial model on data
-        dist = feval( distance, Mtest,s,p );
+        dist = feval( distance, Mtest,data );
         
         %% find inliers within threshold
         inlier = find( dist<thresh );
@@ -64,7 +65,11 @@ function [M,inliersOut] = ransac( model, distance, s, p, varargin )
         %% if this is the most inliers so far calc the model and keep inliers
         if nInlier > nmaxInlier
             
-            M = feval(model, s(inlier,:), p(inlier,:) );
+            for j=1:dataLen
+                sample{j} = data{j}(inlier,:);
+            end% for j
+            
+            M = feval(model, sample );
             inliersOut = inlier;
             nmaxInlier = length( inlier );
             

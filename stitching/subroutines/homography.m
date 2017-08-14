@@ -20,9 +20,9 @@ function [H,inliers] = homography(s,p,varargin)
     
         
     if ~isempty( varargin ) && strcmpi( varargin{1}, 'ransac' )
-        [H,inliers] = ransac( @calcHomography, @homographyDistance, s, p, varargin{2:end} );
+        [H,inliers] = ransac( @calcHomography, @homographyDistance, {s, p}, varargin{2:end} );
     else
-        H = calcHomography(s,p);
+        H = calcHomography( {s,p} );
         inliers = [];
     end
     
@@ -55,16 +55,18 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% homography calculation
-function H = calcHomography(s,p)
+function H = calcHomography( data )
         
-        [r,c] = size(s);
+        [r,c] = size(data{1});
         
         A = zeros( r*3, c*3 );
         
         j = 1;
         for i = 1:3:(r*3-2)
-            s_skew = Skew( s(j,:)' );
-            A( i:i+2, : ) = [  p(j,1)*s_skew     p(j,2)*s_skew     p(j,3)*s_skew     ];
+            s_skew = Skew( data{1}(j,:)' );
+            A( i:i+2, : ) = [   data{2}(j,1)*s_skew,...
+                                data{2}(j,2)*s_skew,...
+                                data{2}(j,3)*s_skew     ];
             j = j+1;
         end% i 
         
@@ -82,14 +84,14 @@ end% calcHomography
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% distance between corresponding points calculated from a homography
-function dist = homographyDistance(Htest,s,p)
-
-    tPoints = ( Htest*p' )';
+function dist = homographyDistance(Htest,data)
+    
+    tPoints = ( Htest*data{2}' )';
     tPoints = tPoints./repmat(tPoints(:,3),1,3);% normalize
 
-    invPoints = (Htest\s')';
+    invPoints = (Htest\data{1}')';
     invPoints = invPoints./repmat(invPoints(:,3),1,3);% normalize
 
     % symmetric distance
-    dist = sum((p-invPoints).^2,2) + sum((s-tPoints).^2,2);
+    dist = sum((data{2}-invPoints).^2,2) + sum((data{1}-tPoints).^2,2);
 end% homographyDistance
