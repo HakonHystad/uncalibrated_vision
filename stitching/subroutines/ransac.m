@@ -71,10 +71,22 @@ function [M,inliersOut] = ransac( model, distance, data, varargin )
             
             M = feval(model, sample );
             inliersOut = inlier;
-            nmaxInlier = length( inlier );
+            nmaxInlier = nInlier;
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             %%TEST
+%             fprintf('Inlier Nr before: %d ',nmaxInlier);
+%             % test trial model on data
+%             distTEST = feval( distance, M,data );
+%         
+%             % find inliers within threshold
+%             inlierTEST = find( distTEST<thresh );
+%             fprintf('After: %d\n',length( inlierTEST ) );
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             % update number of samples
-            pOutlier = 1 - nInlier/len;
+            pOutlier = 1 - nmaxInlier/len;
             nit = log(1-pInlierSample)/log(1-(1-pOutlier)^ssz );
         
         end
