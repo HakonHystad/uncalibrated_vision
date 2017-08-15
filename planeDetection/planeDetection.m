@@ -56,13 +56,43 @@ fprintf(    'Total nr of pixels: %d\nNr of object pixels: %d\nReduction: %.2f\n'
 len = length(X);
 in1 = [ X, Y, ones(len,1) ];
 in2 = in1;
-idx = objectIm>0;
-in2(:,1) = in2(:,1) - disparityMap( idx );
-z = 1./disparityMap( idx );
-pixels = gs( idx );
+obj = objectIm>0;
+in2(:,1) = in2(:,1) - disparityMap( obj );
+rho = 1e3;% scale
+z = 1./disparityMap(obj);
+pixels = gs( obj );
 
 % show 3D affine recovery
-figure, scatter3( in1(:,1), in2(:,2), z, 10, pixels, '.' );
+% figure, scatter3( in1(:,1), in1(:,2), z, 10, pixels, '.' );
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% point cloud 
+r = reshape(rgb(:,:,1),[],1);
+g = reshape(rgb(:,:,2),[],1);
+b = reshape(rgb(:,:,3),[],1);
+r( r==0 ) = [];
+g( g==0 ) = [];
+b( b==0 ) = [];
+color = [ r, g, b ]; 
 
+pts = [ in1(:,1).*z, in1(:,2).*z, z*rho ];
+
+ptCloud = pointCloud( pts, 'Color',color );
+% filter
+ptCloud = pcdenoise( ptCloud );
+
+% find normals
+normals = pcnormals( ptCloud,15 );
+%display normals
+x = ptCloud.Location(1:100:end,1);
+y = ptCloud.Location(1:100:end,2);
+z = ptCloud.Location(1:100:end,3);
+u = normals(1:100:end,1);
+v = normals(1:100:end,2);
+w = normals(1:100:end,3);
+
+figure, pcshow(ptCloud);
+hold on
+quiver3(x,y,z,u,v,w);
+hold off
 
