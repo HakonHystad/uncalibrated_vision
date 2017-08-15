@@ -64,7 +64,7 @@ pixels = gs( idx );
 % show 3D affine recovery
 figure, scatter3( in1(:,1), in2(:,2), z, 10, pixels, '.' );
 
-
+% obsolite
 if false
 
 figure( compFig );
