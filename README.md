@@ -2,6 +2,8 @@
 
 A collection of MATLAB software using the image processing and computer vision toolbox to demonstrate single- and multiview geometry in computer vision. 
 
+The theory used can be found in [this](Applications_of_single__and_multiple_view_geometry_in_computer_vision.pdf) note.
+
 # usage
 Run main.m and pick an application:
 - Single view recovery: Recover affine ( parallel lines of a rectangle ) and/or metric properties ( perpendicular lines of a square ) by specifying a rectangle or square in the world scene.
