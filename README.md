@@ -8,4 +8,5 @@ Run main.m and pick an application:
 - Stitching: Piece together (planar or purely rotated) images by specifying 4 corresponding points (or pressing auto) that define a homography.
 - 3D recovery: Example of projective recovery (3D points) by triangulation with the canonical camera matrices and affine recovery by triangulation with the infinity homography from predetermined vanishing points.
 - Rectification: Rectify two images taken with close to pure translation such that the epipolar lines are parallel. Also do a dense stereo-match and get the resulting binocular disparity map (dependent of the rectification result) recovering (affine) depth.
+- Segmentation: Example using the results of rectification and disparity to segment out an object and make a 3D pointcloud.  
 - Projective depth: Specify 3 points to make a virtual plane and partition the image points on either side of it.  
