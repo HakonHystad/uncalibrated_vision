@@ -1,5 +1,3 @@
-clear all
-close all
 
 im1 = imread( 'rectifiedImage1_1.png' );
 im2 = imread( 'rectifiedImage2_1.png' );

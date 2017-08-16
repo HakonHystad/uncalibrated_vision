@@ -5,6 +5,7 @@ app = { 'Single view recovery',...
         'Stitching',...
         '3D recovery',...
         'Rectification',...
+        'Segmentation',...
         'Projective depth'};
         
 while true
@@ -19,6 +20,8 @@ while true
          case 4
              rectificationGUI
          case 5
+             objectSegmentation
+         case 6
              projectiveDepthGUI
          otherwise
              break;
