@@ -25,23 +25,24 @@ objectIm( bw ) = 0;
 
 % figure, imshow( objectIm, disparityRange );
 % figure,imshow(segIm);
-
+%% show results
 idx = zeros(size(im1,1), size(im1,2), 3,'logical');
 idx(:,:,1) = objectIm==0;
 idx(:,:,2) = objectIm==0;
 idx(:,:,3) = objectIm==0;
 rgb = im1;
 rgb( idx ) = 0;
-% figure,subplot(2,1,1);
-% imshow(im1);
-% subplot(2,1,2);
-% imshow( rgb );
+figure,subplot(2,3,1);
+imshow(im1);
+title('Original');
+subplot(2,3,2);
+imshow( disparityMap,disparityRange );
+title('Disparity');
 
-
-%% results of segmentation
 comp = imfuse( im1, rgb  );
-compFig = figure;
+subplot(2,3,3);
 imshow(comp);
+title('Segmentation');
 
 total = size(im1,1)*size(im1,2);
 i = objectIm>0;
@@ -60,10 +61,6 @@ obj = objectIm>0;
 in2(:,1) = in2(:,1) - disparityMap( obj );
 rho = 1e3;% scale
 z = 1./disparityMap(obj);
-pixels = gs( obj );
-
-% show 3D affine recovery
-% figure, scatter3( in1(:,1), in1(:,2), z, 10, pixels, '.' );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% point cloud 
@@ -78,21 +75,24 @@ color = [ r, g, b ];
 pts = [ in1(:,1).*z, in1(:,2).*z, z*rho ];
 
 ptCloud = pointCloud( pts, 'Color',color );
-% filter
-ptCloud = pcdenoise( ptCloud );
+subplot(2,3,[4 5 6] );
+pcshow(ptCloud);
+title('Point cloud');
 
-% find normals
-normals = pcnormals( ptCloud,15 );
-%display normals
-x = ptCloud.Location(1:100:end,1);
-y = ptCloud.Location(1:100:end,2);
-z = ptCloud.Location(1:100:end,3);
-u = normals(1:100:end,1);
-v = normals(1:100:end,2);
-w = normals(1:100:end,3);
-
-figure, pcshow(ptCloud);
-hold on
-quiver3(x,y,z,u,v,w);
-hold off
+% % filter
+% ptCloud = pcdenoise( ptCloud );
+% 
+% % find normals
+% normals = pcnormals( ptCloud,15 );
+% %display normals
+% x = ptCloud.Location(1:100:end,1);
+% y = ptCloud.Location(1:100:end,2);
+% z = ptCloud.Location(1:100:end,3);
+% u = normals(1:100:end,1);
+% v = normals(1:100:end,2);
+% w = normals(1:100:end,3);
+% 
+% hold on
+% quiver3(x,y,z,u,v,w);
+% hold off
 
