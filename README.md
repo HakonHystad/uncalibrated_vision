@@ -1,6 +1,6 @@
 # image_processing_summer_17
 
-A collection of MATLAB software using the image processing and computer vision toolbox to demonstrate single- and multiview geometry in computer vision.
+A collection of MATLAB software using the image processing and computer vision toolbox to demonstrate single- and multiview geometry in uncalibrated computer vision.
 
 The theory used can be found in [this](Applications_of_single__and_multiple_view_geometry_in_computer_vision.pdf) note and the lecture notes of TPK4170.
 
